@@ -2,7 +2,13 @@
    KITHTHA GRAND — SPA Router
    router.js
 ================================================================ */
-
+// URL error params clean කරන්න
+if (location.hash && location.hash.includes('error=')) {
+  history.replaceState(null, '', location.pathname);
+}
+if (location.search && location.search.includes('error=')) {
+  history.replaceState(null, '', location.pathname);
+}
 /* ────────────────────────────────────────────────────────────────
    Page registry — add new pages here as you build them
 ──────────────────────────────────────────────────────────────── */
@@ -35,7 +41,10 @@ export const router = {
 
   async go(page, params = {}) {
     // Validate
-    document.getElementById('navbar').style.display = page === 'login' ? 'none' : '';
+    // Navbar hide/show
+const navbar = document.getElementById('navbar');
+
+    document.getElementById('navbar').style.display = (page === 'login' || page === 'admin') ? 'none' : '';
     if (!pages[page]) { console.warn(`[Router] Unknown page: ${page}`); return; }
 
     this.currentPage = page;

@@ -1,29 +1,21 @@
 /* ================================================================
    KITHTHA GRAND — Main App
-   app.js
+   js/app.js
 ================================================================ */
 
 import { supabase } from './supabase.js';
 import { router }   from './router.js';
 
-// OAuth redirect hash clean කරන්න
-if (location.hash && location.hash.includes('access_token')) {
-  history.replaceState(null, '', location.pathname);
-}
-if (location.hash && location.hash.includes('error=')) {
-  history.replaceState(null, '', location.pathname);
-}
-
 /* ────────────────────────────────────────────────────────────────
    STATE
 ──────────────────────────────────────────────────────────────── */
 const state = {
-  user:      null,
-  cart:      [],
-  wishlist:  [],
-  currency:  localStorage.getItem('kg_currency') || 'LKR',
-  sound:     localStorage.getItem('kg_sound') !== 'off',
-  rates:     { LKR: 1, USD: 0.0033, EUR: 0.003, GBP: 0.0026 }
+  user:     null,
+  cart:     [],
+  wishlist: [],
+  currency: localStorage.getItem('kg_currency') || 'LKR',
+  sound:    localStorage.getItem('kg_sound') !== 'off',
+  rates:    { LKR: 1, USD: 0.0033, EUR: 0.003, GBP: 0.0026 }
 };
 
 /* ────────────────────────────────────────────────────────────────
@@ -34,13 +26,12 @@ function hideLoading() {
   if (!screen) return;
   screen.classList.add('fade-out');
   document.body.classList.remove('loading');
-  setTimeout(() => screen.remove(), 900);
+  setTimeout(function() { screen.remove(); }, 900);
 }
 
-// Show loading until page + Supabase ready
 document.body.classList.add('loading');
-window.addEventListener('load', () => {
-  setTimeout(hideLoading, 2200); // min 2.2s for brand feel
+window.addEventListener('load', function() {
+  setTimeout(hideLoading, 800);
 });
 
 /* ────────────────────────────────────────────────────────────────
@@ -49,58 +40,45 @@ window.addEventListener('load', () => {
 const cursor      = document.getElementById('cursor');
 const cursorTrail = document.getElementById('cursor-trail');
 
-if (window.matchMedia('(pointer:fine)').matches) {
-  let trailX = 0, trailY = 0;
-  document.addEventListener('mousemove', (e) => {
+if (window.matchMedia('(pointer:fine)').matches && cursor && cursorTrail) {
+  document.addEventListener('mousemove', function(e) {
     cursor.style.left = e.clientX + 'px';
     cursor.style.top  = e.clientY + 'px';
-    // Trail follows with lag
-    trailX += (e.clientX - trailX) * 0.12;
-    trailY += (e.clientY - trailY) * 0.12;
-    cursorTrail.style.left = trailX + 'px';
-    cursorTrail.style.top  = trailY + 'px';
+    cursorTrail.style.left = e.clientX + 'px';
+    cursorTrail.style.top  = e.clientY + 'px';
   });
-  // Smooth trail loop
-  function animateTrail() {
-    requestAnimationFrame(animateTrail);
-  }
-  animateTrail();
 }
 
 /* ────────────────────────────────────────────────────────────────
-   NAVBAR — scroll effect + hamburger
+   NAVBAR
 ──────────────────────────────────────────────────────────────── */
 const navbar     = document.getElementById('navbar');
 const hamburger  = document.getElementById('hamburger');
 const mobileMenu = document.getElementById('mobile-menu');
 
-window.addEventListener('scroll', () => {
-  navbar.classList.toggle('scrolled', window.scrollY > 60);
+window.addEventListener('scroll', function() {
+  if (navbar) navbar.classList.toggle('scrolled', window.scrollY > 60);
 }, { passive: true });
 
-hamburger.addEventListener('click', () => {
-  hamburger.classList.toggle('open');
-  mobileMenu.classList.toggle('open');
-});
+if (hamburger) {
+  hamburger.addEventListener('click', function() {
+    hamburger.classList.toggle('open');
+    if (mobileMenu) mobileMenu.classList.toggle('open');
+  });
+}
 
 /* ────────────────────────────────────────────────────────────────
-   ROUTING — All [data-page] clicks
+   ROUTING
 ──────────────────────────────────────────────────────────────── */
-document.addEventListener('click', (e) => {
+document.addEventListener('click', function(e) {
   const el = e.target.closest('[data-page]');
   if (!el) return;
   e.preventDefault();
   const page = el.dataset.page;
-
-  // Close mobile menu
-  hamburger.classList.remove('open');
-  mobileMenu.classList.remove('open');
-
-  // Navigate
+  if (hamburger) hamburger.classList.remove('open');
+  if (mobileMenu) mobileMenu.classList.remove('open');
   router.go(page);
-
-  // Update active nav link
-  document.querySelectorAll('.nav-link').forEach(l => {
+  document.querySelectorAll('.nav-link').forEach(function(l) {
     l.classList.toggle('active', l.dataset.page === page);
   });
 });
@@ -108,117 +86,141 @@ document.addEventListener('click', (e) => {
 /* ────────────────────────────────────────────────────────────────
    SCROLL REVEAL
 ──────────────────────────────────────────────────────────────── */
-const revealObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add('visible');
-    }
+const revealObserver = new IntersectionObserver(function(entries) {
+  entries.forEach(function(entry) {
+    if (entry.isIntersecting) entry.target.classList.add('visible');
   });
 }, { threshold: 0.12, rootMargin: '0px 0px -50px 0px' });
 
 function observeReveals() {
-  document.querySelectorAll('.reveal:not(.visible)').forEach(el => {
+  document.querySelectorAll('.reveal:not(.visible)').forEach(function(el) {
     revealObserver.observe(el);
   });
 }
 observeReveals();
 
-// Re-run after page changes
 export function initReveals() { observeReveals(); }
 
 /* ────────────────────────────────────────────────────────────────
    CURRENCY
 ──────────────────────────────────────────────────────────────── */
 const currencySelect = document.getElementById('currency-select');
-currencySelect.value = state.currency;
+if (currencySelect) currencySelect.value = state.currency;
 
-currencySelect.addEventListener('change', (e) => {
-  state.currency = e.target.value;
-  localStorage.setItem('kg_currency', state.currency);
-  // Re-render prices across page
-  document.dispatchEvent(new CustomEvent('currencyChange', { detail: state.currency }));
-});
+if (currencySelect) {
+  currencySelect.addEventListener('change', function(e) {
+    state.currency = e.target.value;
+    localStorage.setItem('kg_currency', state.currency);
+    document.dispatchEvent(new CustomEvent('currencyChange', { detail: state.currency }));
+  });
+}
 
 export function formatPrice(lkrPrice) {
-  const rate = state.rates[state.currency];
-  const converted = (lkrPrice * rate).toFixed(2);
-  const symbols = { LKR: 'Rs.', USD: '$', EUR: '€', GBP: '£' };
-  return `${symbols[state.currency]}${converted}`;
+  const rate    = state.rates[state.currency] || 1;
+  const converted = (parseFloat(lkrPrice) * rate).toFixed(2);
+  const symbols = { LKR: 'Rs.', USD: '$', EUR: 'EUR ', GBP: 'GBP ' };
+  return (symbols[state.currency] || 'Rs.') + parseFloat(converted).toLocaleString();
 }
 
 /* ────────────────────────────────────────────────────────────────
    SOUND
 ──────────────────────────────────────────────────────────────── */
 const soundBtn = document.getElementById('sound-toggle');
-const sounds = {
-  click: new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAA...'), // placeholder
-};
 
-soundBtn.addEventListener('click', () => {
-  state.sound = !state.sound;
-  localStorage.setItem('kg_sound', state.sound ? 'on' : 'off');
-  soundBtn.querySelector('i').className = state.sound ? 'fas fa-volume-up' : 'fas fa-volume-mute';
-  showToast(state.sound ? 'Sounds on 🔊' : 'Sounds off 🔇');
-});
-
-export function playSound(name) {
-  if (!state.sound) return;
-  // sounds[name]?.play().catch(()=>{});
+if (soundBtn) {
+  soundBtn.addEventListener('click', function() {
+    state.sound = !state.sound;
+    localStorage.setItem('kg_sound', state.sound ? 'on' : 'off');
+    soundBtn.querySelector('i').className = state.sound
+      ? 'fas fa-volume-up' : 'fas fa-volume-mute';
+    showToast(state.sound ? 'Sounds on' : 'Sounds off');
+  });
 }
 
+export function playSound(name) {}
+
 /* ────────────────────────────────────────────────────────────────
-   TOAST NOTIFICATIONS
+   TOAST
 ──────────────────────────────────────────────────────────────── */
 const toastContainer = document.getElementById('toast-container');
 
-export function showToast(message, type = 'info', duration = 3000) {
+export function showToast(message, type, duration) {
+  if (!toastContainer) return;
+  if (!type)     type     = 'info';
+  if (!duration) duration = 3000;
   const toast = document.createElement('div');
-  toast.className = `toast ${type}`;
+  toast.className = 'toast ' + type;
   const icons = { info: 'ℹ️', success: '✅', error: '❌' };
-  toast.innerHTML = `<span>${icons[type] || '🌶️'}</span><span>${message}</span>`;
+  toast.innerHTML = '<span>' + (icons[type] || '🌶️') + '</span><span>' + message + '</span>';
   toastContainer.appendChild(toast);
-  setTimeout(() => {
+  setTimeout(function() {
     toast.classList.add('fadeout');
-    setTimeout(() => toast.remove(), 400);
+    setTimeout(function() { toast.remove(); }, 400);
   }, duration);
 }
 
 /* ────────────────────────────────────────────────────────────────
-   AUTH STATE
+   AUTH
 ──────────────────────────────────────────────────────────────── */
 const authBtn = document.getElementById('auth-btn');
 
-supabase.auth.onAuthStateChange(async (event, session) => {
-// Auth UI update function
-async function updateAuthUI(user) {
+function updateAuthUI(user) {
+  if (!authBtn) return;
   if (user) {
     authBtn.innerHTML = '<i class="fas fa-user-check"></i><span>Account</span>';
     authBtn.dataset.page = 'profile';
-    await loadCart();
-    await loadWishlist();
+    state.user = user;
+    loadCart();
+    loadWishlist();
   } else {
     authBtn.innerHTML = '<i class="fas fa-user"></i><span>Sign In</span>';
     authBtn.dataset.page = 'login';
+    state.user = null;
     updateCartBadge(0);
     updateWishlistBadge(0);
   }
+  // Admin link show/hide
+const adminLink = document.getElementById('admin-nav-link');
+if (adminLink) {
+  supabase.from('users').select('role').eq('id', user.id).single()
+    .then(function({ data }) {
+      adminLink.style.display = data && data.role === 'admin' ? 'block' : 'none';
+    });
+}
 }
 
-// Session change listener
-supabase.auth.onAuthStateChange(async (event, session) => {
-  state.user = session?.user || null;
-  await updateAuthUI(state.user);
-});
+/* Page load වෙද්දී existing session check */
+(async function() {
+  try {
+    const { data } = await supabase.auth.getSession();
+    if (data && data.session && data.session.user) {
+      console.log('[Auth] Session found:', data.session.user.email);
+      updateAuthUI(data.session.user);
+    } else {
+      console.log('[Auth] No session');
+      updateAuthUI(null);
+    }
+  } catch (err) {
+    console.error('[Auth] getSession error:', err);
+  }
+})();
 
-// Page load වෙද්දී session check — OAuth redirect fix
-supabase.auth.getSession().then(async ({ data: { session } }) => {
-  if (session?.user) {
-    state.user = session.user;
-    await updateAuthUI(state.user);
+/* Auth state change listener */
+supabase.auth.onAuthStateChange(function(event, session) {
+  console.log('[Auth] Event:', event, session ? session.user.email : 'no user');
+  if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
+    updateAuthUI(session ? session.user : null);
+    /* Login page නම් home redirect */
+    const loginPage = document.getElementById('page-login');
+    if (loginPage && loginPage.classList.contains('active')) {
+      showToast('Welcome back! 🌶️', 'success');
+      setTimeout(function() { router.go('home'); }, 600);
+    }
+  }
+  if (event === 'SIGNED_OUT') {
+    updateAuthUI(null);
   }
 });
-});
-
 
 /* ────────────────────────────────────────────────────────────────
    CART
@@ -240,26 +242,25 @@ export async function addToCart(productId) {
     return;
   }
   const { error } = await supabase.from('cart').upsert({
-    user_id: state.user.id,
+    user_id:    state.user.id,
     product_id: productId,
-    quantity: 1
+    quantity:   1
   }, { onConflict: 'user_id,product_id' });
-
   if (!error) {
     await loadCart();
     showToast('Added to cart! 🛒', 'success');
-    playSound('click');
-    // Badge pulse
     const badge = document.getElementById('cart-count');
-    badge.classList.remove('pulse');
-    void badge.offsetWidth;
-    badge.classList.add('pulse');
+    if (badge) {
+      badge.classList.remove('pulse');
+      void badge.offsetWidth;
+      badge.classList.add('pulse');
+    }
   }
 }
 
 function updateCartBadge(count) {
   const el = document.getElementById('cart-count');
-  el.textContent = count > 0 ? count : '';
+  if (el) el.textContent = count > 0 ? count : '';
 }
 
 /* ────────────────────────────────────────────────────────────────
@@ -271,7 +272,7 @@ export async function loadWishlist() {
     .from('saved_items')
     .select('product_id')
     .eq('user_id', state.user.id);
-  state.wishlist = (data || []).map(d => d.product_id);
+  state.wishlist = (data || []).map(function(d) { return d.product_id; });
   updateWishlistBadge(state.wishlist.length);
 }
 
@@ -296,11 +297,75 @@ export async function toggleWishlist(productId) {
 
 function updateWishlistBadge(count) {
   const el = document.getElementById('wishlist-count');
-  el.textContent = count > 0 ? count : '';
+  if (el) el.textContent = count > 0 ? count : '';
 }
 
+/* ── CATEGORIES ── */
+const CAT_EMOJIS  = {
+  'whole-spices':  '🌶️',
+  'ground-spices': '🟡',
+  'spice-blends':  '🫙',
+  'gift-sets':     '🎁',
+};
+const CAT_COLORS = {
+  'whole-spices':  'linear-gradient(160deg,#4a0e00 0%,#8B2500 100%)',
+  'ground-spices': 'linear-gradient(160deg,#3D1C02 0%,#7A3010 100%)',
+  'spice-blends':  'linear-gradient(160deg,#1a2a1a 0%,#2A5C3F 100%)',
+  'gift-sets':     'linear-gradient(160deg,#1a1a2e 0%,#2a1a5e 100%)',
+};
+const CAT_SUBS = {
+  'whole-spices':  'Hand-picked',
+  'ground-spices': 'Stone-ground',
+  'spice-blends':  'Secret recipes',
+  'gift-sets':     'Handcrafted',
+};
+
+export async function loadCategories() {
+  const grid = document.getElementById('categories-grid');
+  if (!grid) return;
+
+  const { data: cats, error } = await supabase
+    .from('categories')
+    .select('*')
+    .eq('is_active', true)
+    .order('sort_order');
+
+  if (error || !cats || !cats.length) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--brown-light);font-style:italic;">Categories coming soon...</div>';
+    return;
+  }
+
+  grid.innerHTML = cats.map(function(cat, i) {
+    var emoji  = CAT_EMOJIS[cat.slug]  || '🌿';
+    var color  = CAT_COLORS[cat.slug]  || 'linear-gradient(160deg,var(--brown) 0%,var(--red-dark) 100%)';
+    var sub    = CAT_SUBS[cat.slug]    || 'Pure Ceylon';
+    var delay  = (i * 0.1).toFixed(1) + 's';
+    var imgHTML = cat.image_url
+      ? '<img src="' + cat.image_url + '" alt="' + cat.name + '" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0" />'
+      : '';
+
+    return '<div class="cat-card reveal" style="--delay:' + delay + '" data-page="products" data-cat="' + cat.slug + '">'
+      + '<div class="cat-bg-img" style="background:' + color + '"></div>'
+      + imgHTML
+      + '<div class="cat-pattern"></div>'
+      + '<div class="cat-ring"></div>'
+      + '<div class="cat-emoji">' + emoji + '</div>'
+      + '<div class="cat-gradient"></div>'
+      + '<div class="cat-content">'
+      + '<h3 class="cat-name">' + cat.name + '</h3>'
+      + '<p class="cat-name-si">' + (cat.name_si || '') + '</p>'
+      + '<div class="cat-footer">'
+      + '<span class="cat-count">' + sub + '</span>'
+      + '<span class="cat-arrow-btn"><i class="fas fa-arrow-right"></i></span>'
+      + '</div>'
+      + '</div>'
+      + '</div>';
+  }).join('');
+
+  observeReveals();
+}
 /* ────────────────────────────────────────────────────────────────
-   FEATURED PRODUCTS (Home page)
+   FEATURED PRODUCTS
 ──────────────────────────────────────────────────────────────── */
 export async function loadFeaturedProducts() {
   const grid = document.getElementById('featured-products');
@@ -313,108 +378,102 @@ export async function loadFeaturedProducts() {
     .eq('is_active', true)
     .limit(8);
 
-  if (error || !products?.length) {
-    grid.innerHTML = `
-      <div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--brown-light);font-style:italic;">
-        🌶️ Products coming soon...
-      </div>`;
+  if (error || !products || !products.length) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--brown-light);font-style:italic;">🌶️ Products coming soon...</div>';
     return;
   }
 
-  grid.innerHTML = products.map(p => `
-    <div class="product-card" data-id="${p.id}">
-      <div class="product-img">
-        ${p.images?.[0]
-          ? `<img src="${p.images[0]}" alt="${p.name}" loading="lazy" />`
-          : `<span style="font-size:4rem">🌶️</span>`
-        }
-        ${p.is_featured ? `<span class="product-badge">Featured</span>` : ''}
-        <button class="product-wish" data-wish="${p.id}" aria-label="Wishlist">
-          <i class="${state.wishlist.includes(p.id) ? 'fas' : 'far'} fa-heart"></i>
-        </button>
-      </div>
-      <div class="product-info">
-        <p class="product-cat">${p.category?.name || 'Spices'}</p>
-        <h3 class="product-name">${p.name}</h3>
-        <p class="product-weight">${p.weight_grams}g · ${p.origin || 'Sri Lanka'}</p>
-        <div class="product-footer">
-          <span class="product-price" data-lkr="${p.price_lkr}">${formatPrice(p.price_lkr)}</span>
-          <button class="product-add" data-add="${p.id}" aria-label="Add to cart">
-            <i class="fas fa-plus"></i>
-          </button>
-        </div>
-      </div>
-    </div>
-  `).join('');
+  grid.innerHTML = products.map(function(p) {
+    var imgHTML = p.images && p.images[0]
+      ? '<img src="' + p.images[0] + '" alt="' + p.name + '" loading="lazy" />'
+      : '<span style="font-size:4rem">🌶️</span>';
+    var wished = state.wishlist.includes(p.id);
+    return '<div class="product-card" data-id="' + p.id + '">'
+      + '<div class="product-img">'
+      + imgHTML
+      + (p.is_featured ? '<span class="product-badge">Featured</span>' : '')
+      + '<button class="product-wish" data-wish="' + p.id + '" aria-label="Wishlist">'
+      + '<i class="' + (wished ? 'fas' : 'far') + ' fa-heart"></i>'
+      + '</button>'
+      + '</div>'
+      + '<div class="product-info">'
+      + '<p class="product-cat">' + (p.category ? p.category.name : 'Spices') + '</p>'
+      + '<h3 class="product-name">' + p.name + '</h3>'
+      + '<p class="product-weight">' + p.weight_grams + 'g &middot; ' + (p.origin || 'Sri Lanka') + '</p>'
+      + '<div class="product-footer">'
+      + '<span class="product-price" data-lkr="' + p.price_lkr + '">' + formatPrice(p.price_lkr) + '</span>'
+      + '<button class="product-add" data-add="' + p.id + '" aria-label="Add to cart">'
+      + '<i class="fas fa-plus"></i>'
+      + '</button>'
+      + '</div>'
+      + '</div>'
+      + '</div>';
+  }).join('');
 
-  // Events
-  grid.querySelectorAll('[data-add]').forEach(btn => {
-    btn.addEventListener('click', (e) => {
+  grid.querySelectorAll('[data-add]').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
       e.stopPropagation();
       addToCart(btn.dataset.add);
     });
   });
-  grid.querySelectorAll('[data-wish]').forEach(btn => {
-    btn.addEventListener('click', (e) => {
+  grid.querySelectorAll('[data-wish]').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
       e.stopPropagation();
       toggleWishlist(btn.dataset.wish);
     });
   });
-  grid.querySelectorAll('.product-card').forEach(card => {
-    card.addEventListener('click', () => {
+  grid.querySelectorAll('.product-card').forEach(function(card) {
+    card.addEventListener('click', function() {
       router.go('product', { id: card.dataset.id });
     });
   });
 
-  // Re-observe reveals
-  initReveals();
+  observeReveals();
 }
 
-// Update prices when currency changes
-document.addEventListener('currencyChange', () => {
-  document.querySelectorAll('[data-lkr]').forEach(el => {
+document.addEventListener('currencyChange', function() {
+  document.querySelectorAll('[data-lkr]').forEach(function(el) {
     el.textContent = formatPrice(parseFloat(el.dataset.lkr));
   });
 });
 
 /* ────────────────────────────────────────────────────────────────
-   CONFETTI (for order success)
+   CONFETTI
 ──────────────────────────────────────────────────────────────── */
 export function launchConfetti() {
   const colors = ['#8B2500','#C8900A','#F0B429','#2A5C3F','#FDF3E3'];
-  for (let i = 0; i < 80; i++) {
+  for (var i = 0; i < 80; i++) {
     const piece = document.createElement('div');
     piece.className = 'confetti-piece';
-    piece.style.cssText = `
-      left: ${Math.random() * 100}vw;
-      background: ${colors[Math.floor(Math.random() * colors.length)]};
-      width: ${6 + Math.random() * 8}px;
-      height: ${6 + Math.random() * 8}px;
-      animation-delay: ${Math.random() * 1.5}s;
-      animation-duration: ${2 + Math.random() * 2}s;
-      border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
-    `;
+    piece.style.cssText = 'left:' + (Math.random() * 100) + 'vw;'
+      + 'background:' + colors[Math.floor(Math.random() * colors.length)] + ';'
+      + 'width:' + (6 + Math.random() * 8) + 'px;'
+      + 'height:' + (6 + Math.random() * 8) + 'px;'
+      + 'animation-delay:' + (Math.random() * 1.5) + 's;'
+      + 'animation-duration:' + (2 + Math.random() * 2) + 's;'
+      + 'border-radius:' + (Math.random() > 0.5 ? '50%' : '2px') + ';';
     document.body.appendChild(piece);
-    setTimeout(() => piece.remove(), 4000);
+    setTimeout(function() { piece.remove(); }, 4000);
   }
 }
 
 /* ────────────────────────────────────────────────────────────────
    INIT
 ──────────────────────────────────────────────────────────────── */
-// Load featured products when home page visible
-const homeObserver = new MutationObserver(() => {
+/* Home page products */
+const appObserver = new MutationObserver(function() {
   const homePage = document.getElementById('page-home');
-  if (homePage?.classList.contains('active')) {
+  if (homePage && homePage.classList.contains('active')) {
     loadFeaturedProducts();
   }
 });
-homeObserver.observe(document.getElementById('app'), { childList: false, attributes: true, subtree: true });
-
+appObserver.observe(document.getElementById('app'), {
+  childList: false, attributes: true, subtree: true
+});
 // Initial load
+
+loadCategories();   // ← add
 loadFeaturedProducts();
 
-// Export state for other modules
+/* Global exports */
 export { state };
-// Expose globally
-window.router = router;
