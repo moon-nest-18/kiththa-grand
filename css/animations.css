@@ -1,0 +1,122 @@
+/* ================================================================
+   KITHTHA GRAND — Animations
+   animations.css
+================================================================ */
+
+/* ── Loading ── */
+@keyframes spinRing {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes loadBar {
+  0%   { width: 0%; }
+  30%  { width: 40%; }
+  60%  { width: 70%; }
+  85%  { width: 90%; }
+  100% { width: 100%; }
+}
+@keyframes floatParticle {
+  0%, 100% { opacity: 0; transform: translateY(0) scale(1); }
+  20%       { opacity: 0.6; }
+  50%       { opacity: 0.4; transform: translateY(-30px) scale(1.1); }
+  80%       { opacity: 0.2; }
+}
+
+/* ── Loading screen fade out ── */
+.loading-screen.fade-out {
+  animation: fadeOut 0.8s ease forwards;
+}
+@keyframes fadeOut {
+  0%   { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(0.97); pointer-events: none; }
+}
+
+/* ── Marquee ── */
+@keyframes marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ── Orbit ── */
+@keyframes orbitSpin {
+  from { transform: rotate(var(--angle)) translateX(120px) rotate(calc(-1 * var(--angle))); }
+  to   { transform: rotate(calc(var(--angle) + 360deg)) translateX(120px) rotate(calc(-1 * (var(--angle) + 360deg))); }
+}
+
+/* ── Scroll Bob ── */
+@keyframes scrollBob {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50%       { transform: translateX(-50%) translateY(8px); }
+}
+
+/* ── Shimmer (skeleton) ── */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* ── Toast ── */
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes toastOut {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(20px); }
+}
+
+/* ── Page Transition ── */
+@keyframes pageIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.page.active {
+  animation: pageIn 0.25s ease forwards;
+}
+
+/* ── Pulse (for badges) ── */
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.15); }
+}
+.badge.pulse { animation: pulse 0.4s ease; }
+
+/* ── Confetti (order success) ── */
+.confetti-piece {
+  position: fixed;
+  width: 10px; height: 10px;
+  top: -20px;
+  border-radius: 2px;
+  animation: confettiFall 3s ease-in forwards;
+  pointer-events: none;
+  z-index: 99999;
+}
+@keyframes confettiFall {
+  0%   { transform: translateY(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+}
+
+/* ── Hover glow (product cards) ── */
+.product-card::after {
+  content: '';
+  position: absolute; inset: 0;
+  border-radius: inherit;
+  box-shadow: 0 0 0 0 rgba(139,37,0,0);
+  transition: box-shadow 0.35s;
+  pointer-events: none;
+}
+.product-card { position: relative; }
+.product-card:hover::after {
+  box-shadow: 0 0 0 2px rgba(139,37,0,0.15);
+}
+
+/* ── Reduce motion ── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .marquee-track { animation: none; }
+  .orbit-item { animation: none; }
+}

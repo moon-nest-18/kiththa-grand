@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kiththa Grand — Pure Ceylon Spices</title>
+  <meta name="description" content="Authentic pure Ceylon spices, sourced directly from Sri Lanka. Whole spices, ground spices, and gift sets." />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=IM+Fell+English:ital@0;1&family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+</head>
+<body>
+
+  <!-- ============================================================
+       LOADING SCREEN
+  ============================================================ -->
+  <div id="loading-screen" class="loading-screen">
+    <div class="loading-inner">
+      <div class="loading-logo">
+        <div class="loading-emblem">
+          <div class="emblem-ring"></div>
+          <div class="emblem-ring ring-2"></div>
+          <div class="emblem-center">
+            <div class="emblem-icon">
+    <img src="images/kiththa LOGO (4).png" alt="Bizmate Logo" style="width: 100%; height: 100%;">
+</div>
+            
+          </div>
+        </div>
+        <h1 class="loading-title">Kiththa Grand</h1>
+        <p class="loading-sub">Pure Ceylon Spices</p>
+      </div>
+      <div class="loading-bar-wrap">
+        <div class="loading-bar"></div>
+      </div>
+      <p class="loading-tagline">දිවෙන රසය · Taste of the Island</p>
+    </div>
+    <!-- Floating spice particles -->
+    <div class="particle" style="--x:10%;--y:20%;--d:3s;--s:1.2">🌶️</div>
+    <div class="particle" style="--x:85%;--y:15%;--d:2.5s;--s:0.8">✨</div>
+    <div class="particle" style="--x:25%;--y:75%;--d:4s;--s:1">🫚</div>
+    <div class="particle" style="--x:70%;--y:65%;--d:3.5s;--s:0.9">🌿</div>
+    <div class="particle" style="--x:50%;--y:10%;--d:2s;--s:0.7">⭐</div>
+    <div class="particle" style="--x:90%;--y:80%;--d:4.5s;--s:1.1">🌶️</div>
+  </div>
+
+  <!-- ============================================================
+       CUSTOM CURSOR (desktop only)
+  ============================================================ -->
+  <div id="cursor" class="custom-cursor"></div>
+  <div id="cursor-trail" class="cursor-trail"></div>
+
+  <!-- ============================================================
+       NAVIGATION
+  ============================================================ -->
+  <nav id="navbar" class="navbar">
+    <div class="nav-inner">
+      <!-- Logo -->
+      <a href="#" class="nav-logo" data-page="home">
+  <img src="images/kiththa LOGO (4).png" alt="Kiththa Grand" class="nav-logo-img" />
+  <div class="nav-logo-text">
+    <span class="nav-logo-main">Kiththa Grand</span>
+  </div>
+</a>
+
+      <!-- Desktop Nav Links -->
+      <ul class="nav-links">
+        <li><a href="#" data-page="home" class="nav-link active">Home</a></li>
+        <li><a href="#" data-page="products" class="nav-link">Products</a></li>
+        <li><a href="#" data-page="bulk-orders" class="nav-link">Bulk Orders</a></li>
+        <li><a href="#" data-page="about" class="nav-link">Our Story</a></li>
+        <li><a href="#" data-page="contact" class="nav-link">Contact</a></li>
+      </ul>
+
+      <!-- Nav Actions -->
+      <div class="nav-actions">
+        <!-- Currency Selector -->
+        <select id="currency-select" class="currency-select">
+          <option value="LKR">LKR</option>
+          <option value="USD">USD</option>
+          <option value="EUR">EUR</option>
+          <option value="GBP">GBP</option>
+        </select>
+
+        <!-- Sound Toggle -->
+        <button id="sound-toggle" class="icon-btn" title="Toggle sounds" aria-label="Toggle sounds">
+          <i class="fas fa-volume-up"></i>
+        </button>
+
+        <!-- Wishlist -->
+        <button class="icon-btn" data-page="wishlist" title="Wishlist" aria-label="Wishlist">
+          <i class="far fa-heart"></i>
+          <span class="badge" id="wishlist-count">0</span>
+        </button>
+
+        <!-- Cart -->
+        <button class="icon-btn cart-btn" data-page="cart" title="Cart" aria-label="Cart">
+          <i class="fas fa-shopping-basket"></i>
+          <span class="badge" id="cart-count">0</span>
+        </button>
+
+        <!-- Auth -->
+        <button class="btn-auth" data-page="login" id="auth-btn">
+          <i class="fas fa-user"></i>
+          <span>Sign In</span>
+        </button>
+      </div>
+
+      <!-- Mobile Hamburger -->
+      <button id="hamburger" class="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="mobile-menu">
+      <ul>
+        <li><a href="#" data-page="home">Home</a></li>
+        <li><a href="#" data-page="products">Products</a></li>
+        <li><a href="#" data-page="bulk-orders">Bulk Orders</a></li>
+        <li><a href="#" data-page="about">Our Story</a></li>
+        <li><a href="#" data-page="contact">Contact</a></li>
+        <li><a href="#" data-page="login">Sign In</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ============================================================
+       MAIN PAGE CONTAINER (Router injects pages here)
+  ============================================================ -->
+  <main id="app">
+
+    <!-- ====================== HOME PAGE ====================== -->
+    <div id="page-home" class="page active">
+
+      <!-- HERO -->
+      <section class="hero">
+        <div class="hero-bg">
+          <div class="hero-pattern"></div>
+          <div class="hero-overlay"></div>
+        </div>
+        <div class="hero-content">
+          <p class="hero-eyebrow reveal">From the Spice Gardens of Ceylon</p>
+          <h1 class="hero-title reveal">
+            <span class="title-line">Pure</span>
+            <span class="title-line gold">Ceylon</span>
+            <span class="title-line">Spices</span>
+          </h1>
+          <p class="hero-desc reveal">
+            Hand-picked from the misty highlands of Sri Lanka.<br/>
+            Delivered to your door, worldwide.
+          </p>
+          <div class="hero-actions reveal">
+            <button class="btn-primary" data-page="products">
+              <span>Explore Spices</span>
+              <i class="fas fa-arrow-right"></i>
+            </button>
+            <button class="btn-ghost" data-page="bulk-orders">
+              Bulk Orders
+            </button>
+          </div>
+          <!-- Stats -->
+          <div class="hero-stats reveal">
+            <div class="stat">
+              <span class="stat-num">50+</span>
+              <span class="stat-label">Spice Varieties</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat">
+              <span class="stat-num">40+</span>
+              <span class="stat-label">Countries Delivered</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat">
+              <span class="stat-num">100%</span>
+              <span class="stat-label">Pure & Natural</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hero Side Image / Decoration -->
+        <div class="hero-deco">
+          <div class="deco-circle circle-1"></div>
+          <div class="deco-circle circle-2"></div>
+          <div class="deco-spice-bowl">
+            <div class="bowl-glow"></div>
+            <span class="bowl-emoji">🫙</span>
+            <div class="orbit-item" style="--angle:0deg">🌶️</div>
+            <div class="orbit-item" style="--angle:72deg">🌿</div>
+            <div class="orbit-item" style="--angle:144deg">⭐</div>
+            <div class="orbit-item" style="--angle:216deg">🫚</div>
+            <div class="orbit-item" style="--angle:288deg">🌰</div>
+          </div>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <div class="scroll-indicator">
+          <div class="scroll-line"></div>
+          <span>Scroll</span>
+        </div>
+      </section>
+
+      <!-- MARQUEE STRIP -->
+      <div class="marquee-strip">
+        <div class="marquee-track">
+          <span>🌶️ Ceylon Cinnamon</span>
+          <span>✦</span>
+          <span>🌿 Curry Leaves</span>
+          <span>✦</span>
+          <span>⭐ Cardamom</span>
+          <span>✦</span>
+          <span>🌰 Cloves</span>
+          <span>✦</span>
+          <span>🫚 Black Pepper</span>
+          <span>✦</span>
+          <span>🟡 Turmeric</span>
+          <span>✦</span>
+          <span>🌶️ Ceylon Cinnamon</span>
+          <span>✦</span>
+          <span>🌿 Curry Leaves</span>
+          <span>✦</span>
+          <span>⭐ Cardamom</span>
+          <span>✦</span>
+          <span>🌰 Cloves</span>
+          <span>✦</span>
+          <span>🫚 Black Pepper</span>
+          <span>✦</span>
+          <span>🟡 Turmeric</span>
+          <span>✦</span>
+        </div>
+      </div>
+
+      <!-- CATEGORIES SECTION -->
+      <section class="section categories-section">
+        <div class="container">
+          <div class="section-header reveal">
+            <p class="section-eyebrow">Browse By</p>
+            <h2 class="section-title">Our Collections</h2>
+            <div class="title-ornament">
+              <span class="ornament-line"></span>
+              <span class="ornament-icon">✦</span>
+              <span class="ornament-line"></span>
+            </div>
+          </div>
+          <div class="categories-grid">
+            <div class="cat-card reveal" data-page="products" data-cat="whole-spices">
+              <div class="cat-bg"></div>
+              <div class="cat-icon">🌶️</div>
+              <h3>Whole Spices</h3>
+              <p>සම්පූර්ණ කුළුබඩු</p>
+              <span class="cat-arrow">→</span>
+            </div>
+            <div class="cat-card reveal" data-page="products" data-cat="ground-spices" style="--delay:0.1s">
+              <div class="cat-bg"></div>
+              <div class="cat-icon">🟡</div>
+              <h3>Ground Spices</h3>
+              <p>කුඩු කුළුබඩු</p>
+              <span class="cat-arrow">→</span>
+            </div>
+            <div class="cat-card reveal" data-page="products" data-cat="spice-blends" style="--delay:0.2s">
+              <div class="cat-bg"></div>
+              <div class="cat-icon">🫙</div>
+              <h3>Spice Blends</h3>
+              <p>කුළුබඩු මිශ්‍රණ</p>
+              <span class="cat-arrow">→</span>
+            </div>
+            <div class="cat-card reveal" data-page="products" data-cat="gift-sets" style="--delay:0.3s">
+              <div class="cat-bg"></div>
+              <div class="cat-icon">🎁</div>
+              <h3>Gift Sets</h3>
+              <p>තෑගි කට්ටල</p>
+              <span class="cat-arrow">→</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FEATURED PRODUCTS SECTION -->
+      <section class="section products-section">
+        <div class="container">
+          <div class="section-header reveal">
+            <p class="section-eyebrow">Handpicked for You</p>
+            <h2 class="section-title">Featured Spices</h2>
+            <div class="title-ornament">
+              <span class="ornament-line"></span>
+              <span class="ornament-icon">✦</span>
+              <span class="ornament-line"></span>
+            </div>
+          </div>
+          <!-- Products will be loaded from Supabase -->
+          <div id="featured-products" class="products-grid">
+            <!-- Skeleton loaders -->
+            <div class="product-skeleton"></div>
+            <div class="product-skeleton"></div>
+            <div class="product-skeleton"></div>
+            <div class="product-skeleton"></div>
+          </div>
+          <div class="section-cta reveal">
+            <button class="btn-primary" data-page="products">
+              <span>View All Spices</span>
+              <i class="fas fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- WHY US SECTION -->
+      <section class="section why-section">
+        <div class="why-bg-pattern"></div>
+        <div class="container">
+          <div class="section-header reveal">
+            <p class="section-eyebrow">Why Kiththa Grand</p>
+            <h2 class="section-title">The Ceylon Difference</h2>
+            <div class="title-ornament">
+              <span class="ornament-line"></span>
+              <span class="ornament-icon">✦</span>
+              <span class="ornament-line"></span>
+            </div>
+          </div>
+          <div class="why-grid">
+            <div class="why-card reveal">
+              <div class="why-icon">🌱</div>
+              <h3>Farm Direct</h3>
+              <p>Sourced directly from certified spice gardens in Sri Lanka. No middlemen, full traceability.</p>
+            </div>
+            <div class="why-card reveal" style="--delay:0.1s">
+              <div class="why-icon">✨</div>
+              <h3>100% Pure</h3>
+              <p>No additives, no fillers, no artificial colours. Just pure Ceylon spices as nature intended.</p>
+            </div>
+            <div class="why-card reveal" style="--delay:0.2s">
+              <div class="why-icon">📦</div>
+              <h3>Global Delivery</h3>
+              <p>FedEx tracked shipping to 40+ countries. Free shipping on orders above $150 USD.</p>
+            </div>
+            <div class="why-card reveal" style="--delay:0.3s">
+              <div class="why-icon">🎁</div>
+              <h3>Gift Ready</h3>
+              <p>Beautiful handcrafted packaging perfect for gifts, weddings, and corporate hampers.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- STORY SECTION -->
+      <section class="section story-section">
+        <div class="container story-container">
+          <div class="story-image reveal">
+            <div class="story-img-frame">
+              <div class="story-img-placeholder">
+                <span>🌿</span>
+                <p>Spice Garden<br/>Sri Lanka</p>
+              </div>
+            </div>
+          </div>
+          <div class="story-text reveal">
+            <p class="section-eyebrow">Our Heritage</p>
+            <h2 class="section-title">From Our Gardens<br/>to Your Kitchen</h2>
+            <div class="title-ornament left">
+              <span class="ornament-line"></span>
+              <span class="ornament-icon">✦</span>
+              <span class="ornament-line"></span>
+            </div>
+            <p class="story-para">
+              Kiththa Grand was born from a deep love for Sri Lanka's legendary spice heritage.
+              For centuries, Ceylon was known as the "Island of Spices" — and we're here to
+              bring that legacy to kitchens around the world.
+            </p>
+            <p class="story-para">
+              Every spice is hand-selected from trusted farmers, sun-dried traditionally,
+              and packed with care — preserving the aroma, flavour, and potency that makes
+              Ceylon spices world-famous.
+            </p>
+            <button class="btn-outline" data-page="about">
+              Read Our Full Story
+              <i class="fas fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- LOYALTY BANNER -->
+      <section class="loyalty-banner reveal">
+        <div class="container">
+          <div class="loyalty-inner">
+            <div class="loyalty-icon">⭐</div>
+            <div class="loyalty-text">
+              <h3>Earn Loyalty Points with Every Order</h3>
+              <p>10 points per $1 spent · Redeem for discounts · Birthday bonuses · Referral rewards</p>
+            </div>
+            <button class="btn-gold" data-page="login">Join Now — It's Free</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- FOOTER -->
+      <footer class="footer">
+        <div class="footer-pattern"></div>
+        <div class="container">
+          <div class="footer-grid">
+            <!-- Brand -->
+            <div class="footer-brand">
+              <div class="footer-logo">
+                <span>🌶️</span>
+                <span>Kiththa Grand</span>
+              </div>
+              <p class="footer-tagline">Pure Ceylon Spices<br/>දිවෙන රසය</p>
+              <div class="footer-social">
+                <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+                <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+              </div>
+            </div>
+            <!-- Links -->
+            <div class="footer-col">
+              <h4>Shop</h4>
+              <ul>
+                <li><a href="#" data-page="products">All Spices</a></li>
+                <li><a href="#" data-page="products">Whole Spices</a></li>
+                <li><a href="#" data-page="products">Ground Spices</a></li>
+                <li><a href="#" data-page="products">Gift Sets</a></li>
+                <li><a href="#" data-page="bulk-orders">Bulk Orders</a></li>
+              </ul>
+            </div>
+            <div class="footer-col">
+              <h4>Account</h4>
+              <ul>
+                <li><a href="#" data-page="login">Sign In</a></li>
+                <li><a href="#" data-page="profile">My Profile</a></li>
+                <li><a href="#" data-page="orders">Order History</a></li>
+                <li><a href="#" data-page="wishlist">Wishlist</a></li>
+              </ul>
+            </div>
+            <div class="footer-col">
+              <h4>Contact</h4>
+              <ul>
+                <li><i class="fab fa-whatsapp"></i> +94 77 123 4567</li>
+                <li><i class="fas fa-envelope"></i> hello@kiththagrand.com</li>
+                <li><i class="fas fa-map-marker-alt"></i> Colombo, Sri Lanka</li>
+              </ul>
+              <!-- Newsletter -->
+              <div class="newsletter">
+                <input type="email" placeholder="Your email..." class="newsletter-input" />
+                <button class="newsletter-btn">→</button>
+              </div>
+            </div>
+          </div>
+          <div class="footer-bottom">
+            <p>© 2024 Kiththa Grand. All rights reserved.</p>
+            <div class="footer-payments">
+              <i class="fab fa-cc-visa"></i>
+              <i class="fab fa-cc-mastercard"></i>
+              <i class="fab fa-cc-paypal"></i>
+              <i class="fab fa-cc-amex"></i>
+            </div>
+          </div>
+        </div>
+      </footer>
+
+    </div><!-- /page-home -->
+
+    <!-- Other pages will be injected here by router.js -->
+    <div id="page-products"    class="page"></div>
+    <div id="page-product"     class="page"></div>
+    <div id="page-cart"        class="page"></div>
+    <div id="page-checkout"    class="page"></div>
+    <div id="page-success"     class="page"></div>
+    <div id="page-profile"     class="page"></div>
+    <div id="page-settings"    class="page"></div>
+    <div id="page-wishlist"    class="page"></div>
+    <div id="page-orders"      class="page"></div>
+    <div id="page-bulk-orders" class="page"></div>
+    <div id="page-about"       class="page"></div>
+    <div id="page-contact"     class="page"></div>
+    <div id="page-login"       class="page"></div>
+    <div id="page-admin"       class="page"></div>
+
+  </main>
+
+  <!-- ============================================================
+       WHATSAPP FLOAT BUTTON
+  ============================================================ -->
+  <a href="https://wa.me/94771234567" class="whatsapp-float" target="_blank" aria-label="WhatsApp">
+    <i class="fab fa-whatsapp"></i>
+    <span class="whatsapp-tooltip">Chat with us!</span>
+  </a>
+
+  <!-- ============================================================
+       TOAST NOTIFICATION
+  ============================================================ -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- ============================================================
+       SCRIPTS
+  ============================================================ -->
+  <script type="module" src="js/supabase.js"></script>
+  <script type="module" src="js/router.js"></script>
+  <script type="module" src="js/app.js"></script>
+
+</body>
+</html>
