@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git push *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git commit -m 'Increase hero height on products + account pages *)",
+      "Bash(git commit -m 'Navbar full screen width — remove max-width constraint *)",
+      "Bash(vercel login *)",
+      "Bash(vercel --yes)",
+      "Bash(vercel --yes --scope moon-nest)",
+      "Bash(git commit -m 'Mobile fixes, admin font, dropdown improvements *)",
+      "Bash(vercel deploy *)"
+    ]
+  }
+}
