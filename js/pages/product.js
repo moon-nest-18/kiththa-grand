@@ -32,8 +32,8 @@ const PRODUCT_CSS = [
     'aspect-ratio:1/1;box-shadow:var(--shadow-md)}',
 
   /* Sliding track */
-  '.pd-track{display:flex;height:100%;transition:transform .45s cubic-bezier(.4,0,.2,1);will-change:transform}',
-  '.pd-slide{min-width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:5rem;flex-shrink:0;background:var(--cream-dark)}',
+  '.pd-track{display:flex;position:absolute;inset:0;transition:transform .45s cubic-bezier(.4,0,.2,1);will-change:transform}',
+  '.pd-slide{min-width:100%;width:100%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:5rem;background:var(--cream-dark);overflow:hidden}',
   '.pd-slide img{width:100%;height:100%;object-fit:cover;display:block}',
 
   /* Arrow buttons */
@@ -195,8 +195,12 @@ var slideIndex = 0;
 /* ── Move to slide n ── */
 function goToSlide(n, container) {
   slideIndex = ((n % slideCount) + slideCount) % slideCount;
+  var wrap  = container.querySelector('.pd-main-wrap');
   var track = container.querySelector('#pd-track');
-  if (track) track.style.transform = 'translateX(' + (-slideIndex * 100) + '%)';
+  if (track && wrap) {
+    /* Use px so % doesn't resolve against the track's own expanded width */
+    track.style.transform = 'translateX(-' + (slideIndex * wrap.offsetWidth) + 'px)';
+  }
   container.querySelectorAll('.pd-dot').forEach(function(d, i) {
     d.classList.toggle('active', i === slideIndex);
   });
