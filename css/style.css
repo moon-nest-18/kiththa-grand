@@ -185,23 +185,23 @@ body:has(button:hover) .custom-cursor { width: 28px; height: 28px; background: v
   color: var(--cream);
   transition: color var(--transition);
   flex-shrink: 0;
-  .nav-logo-img {
+}
+.nav-logo-img {
   height: 55px;
   width: auto;
   object-fit: contain;
-  mix-blend-mode: multiply;   /* ← black background hide කරනවා */
+  mix-blend-mode: multiply;
   transition: var(--transition);
 }
 .navbar.scrolled .nav-logo-img {
   mix-blend-mode: normal;
   filter: none;
 }
-}
 .navbar.scrolled .nav-logo { color: var(--red); }
 .logo-icon { font-size: 1.5rem; }
 .nav-links {
-  display: flex; align-items: center; gap: 8px;
-  margin-left: auto;
+  flex: 1;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
 }
 .nav-link {
   font-family: var(--font-sub);
