@@ -325,13 +325,13 @@ const CSS = `
 .profile-hero{position:relative;background:var(--brown);padding:120px 0 80px;overflow:hidden}
 .profile-hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 10% 50%,rgba(139,37,0,.4) 0%,transparent 60%),radial-gradient(ellipse at 90% 30%,rgba(200,144,10,.1) 0%,transparent 50%)}
 .profile-hero-inner{position:relative;z-index:1;display:grid;grid-template-columns:auto 1fr auto auto;align-items:center;gap:28px;padding-bottom:20px}
-.profile-avatar-wrap{position:relative;display:inline-block}
-.profile-avatar{width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,var(--red),var(--red-dark));border:3px solid rgba(200,144,10,.4);display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;box-shadow:0 8px 32px rgba(0,0,0,.3)}
+.profile-avatar-wrap{position:relative;display:inline-block;line-height:0;vertical-align:middle}
+.profile-avatar{width:104px;height:104px;border-radius:50%;background:linear-gradient(135deg,var(--red),var(--red-dark));border:3px solid rgba(200,144,10,.4);display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;box-shadow:0 8px 32px rgba(0,0,0,.3)}
 .profile-avatar img{width:100%;height:100%;object-fit:cover}
-.avatar-initials{font-family:var(--font-head);font-size:2rem;color:var(--gold-light)}
-.avatar-edit-btn{position:absolute;bottom:2px;right:2px;width:28px;height:28px;border-radius:50%;background:var(--gold);color:var(--brown);font-size:.72rem;display:flex;align-items:center;justify-content:center;transition:var(--transition);z-index:2;box-shadow:0 2px 6px rgba(0,0,0,.3)}
+.avatar-initials{font-family:var(--font-head);font-size:2rem;color:var(--gold-light);line-height:1}
+.avatar-edit-btn{position:absolute;bottom:6px;right:6px;width:30px;height:30px;border-radius:50%;background:var(--gold);color:var(--brown);font-size:.75rem;display:flex;align-items:center;justify-content:center;transition:var(--transition);z-index:2;box-shadow:0 2px 8px rgba(0,0,0,.35);border:2px solid var(--brown)}
 .avatar-edit-btn:hover{background:var(--gold-light);transform:scale(1.1)}
-.profile-online-dot{position:absolute;top:4px;right:4px;width:14px;height:14px;border-radius:50%;background:#22c55e;border:2px solid var(--brown)}
+.profile-online-dot{position:absolute;top:8px;right:8px;width:13px;height:13px;border-radius:50%;background:#22c55e;border:2px solid var(--brown)}
 .profile-greeting{font-style:italic;font-size:.85rem;color:var(--gold);margin-bottom:4px}
 .profile-name{font-family:var(--font-head);font-size:clamp(1.4rem,3vw,2rem);color:var(--cream);margin-bottom:8px}
 .profile-email{font-size:.85rem;color:rgba(240,224,192,.6);display:flex;align-items:center;gap:8px;margin-bottom:12px}
