@@ -293,14 +293,16 @@ export async function addToCart(productId) {
     router.go('login');
     return;
   }
+  var existing = state.cart.find(function(c) { return c.product_id === productId; });
+  var newQty   = existing ? (existing.quantity + 1) : 1;
   const { error } = await supabase.from('cart').upsert({
     user_id:    state.user.id,
     product_id: productId,
-    quantity:   1
+    quantity:   newQty
   }, { onConflict: 'user_id,product_id' });
   if (!error) {
     await loadCart();
-    showToast('Added to cart! 🛒', 'success');
+    showToast('Added to cart!', 'success');
     const badge = document.getElementById('cart-count');
     if (badge) {
       badge.classList.remove('pulse');
@@ -308,6 +310,25 @@ export async function addToCart(productId) {
       badge.classList.add('pulse');
     }
   }
+}
+
+export async function removeFromCart(productId) {
+  if (!state.user) return;
+  await supabase.from('cart').delete()
+    .eq('user_id', state.user.id)
+    .eq('product_id', productId);
+  await loadCart();
+}
+
+export async function setCartQuantity(productId, qty) {
+  if (!state.user) return;
+  if (qty <= 0) { await removeFromCart(productId); return; }
+  await supabase.from('cart').upsert({
+    user_id:    state.user.id,
+    product_id: productId,
+    quantity:   qty
+  }, { onConflict: 'user_id,product_id' });
+  await loadCart();
 }
 
 function updateCartBadge(count) {
