@@ -131,19 +131,102 @@ export function formatPrice(lkrPrice) {
 const soundBtn        = document.getElementById('sound-toggle');
 const bgMusic         = document.getElementById('bg-music');
 const musicNowPlaying = document.getElementById('music-now-playing');
+const mpPlayer        = document.getElementById('music-player');
+const mpDisc          = document.getElementById('mp-disc');
+const mpPlayBtn       = document.getElementById('mp-playbtn');
+const mpMuteBtn       = document.getElementById('mp-mutebtn');
+const mpBar           = document.getElementById('mp-bar');
+const mpBarFill       = document.getElementById('mp-bar-fill');
+const mpCurTime       = document.getElementById('mp-cur-time');
+const mpDurTime       = document.getElementById('mp-dur-time');
+const mpClose         = document.getElementById('mp-close');
 var musicStarted = false;
 
-if (bgMusic) {
-  bgMusic.volume = 0.3;
+if (bgMusic) bgMusic.volume = 0.3;
+
+function fmtTime(sec) {
+  if (!sec || !isFinite(sec)) return '--:--';
+  var m = Math.floor(sec / 60);
+  var s = Math.floor(sec % 60);
+  return m + ':' + (s < 10 ? '0' : '') + s;
 }
 
 function showMusicPill(show) {
   if (!musicNowPlaying) return;
-  if (show) {
-    musicNowPlaying.classList.add('visible');
-  } else {
-    musicNowPlaying.classList.remove('visible');
-  }
+  musicNowPlaying.classList.toggle('visible', show);
+  musicNowPlaying.classList.toggle('player-open', show && mpPlayer && mpPlayer.classList.contains('visible'));
+}
+
+function showMusicPlayer(show) {
+  if (!mpPlayer) return;
+  mpPlayer.classList.toggle('visible', show);
+  if (musicNowPlaying) musicNowPlaying.classList.toggle('player-open', show);
+}
+
+function syncPlayerUI() {
+  if (!bgMusic) return;
+  var playing = !bgMusic.paused;
+  if (mpPlayBtn) mpPlayBtn.querySelector('i').className = playing ? 'fas fa-pause' : 'fas fa-play';
+  if (mpDisc)    mpDisc.classList.toggle('spinning', playing);
+  if (mpMuteBtn) mpMuteBtn.querySelector('i').className = state.sound ? 'fas fa-volume-up' : 'fas fa-volume-mute';
+}
+
+if (bgMusic) {
+  bgMusic.addEventListener('timeupdate', function() {
+    if (!bgMusic.duration) return;
+    var pct = (bgMusic.currentTime / bgMusic.duration) * 100;
+    if (mpBarFill) mpBarFill.style.width = pct + '%';
+    if (mpCurTime) mpCurTime.textContent = fmtTime(bgMusic.currentTime);
+    if (mpDurTime) mpDurTime.textContent = fmtTime(bgMusic.duration);
+  });
+  bgMusic.addEventListener('play',  syncPlayerUI);
+  bgMusic.addEventListener('pause', syncPlayerUI);
+}
+
+if (mpPlayBtn) {
+  mpPlayBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    if (!bgMusic) return;
+    if (bgMusic.paused) {
+      bgMusic.play().then(function() { musicStarted = true; syncPlayerUI(); }).catch(function(){});
+    } else {
+      bgMusic.pause();
+    }
+  });
+}
+
+if (mpBar) {
+  mpBar.addEventListener('click', function(e) {
+    if (!bgMusic || !bgMusic.duration) return;
+    var rect = mpBar.getBoundingClientRect();
+    bgMusic.currentTime = ((e.clientX - rect.left) / rect.width) * bgMusic.duration;
+  });
+}
+
+if (mpMuteBtn) {
+  mpMuteBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    state.sound = !state.sound;
+    localStorage.setItem('kg_sound', state.sound ? 'on' : 'off');
+    syncSoundIcon();
+    syncPlayerUI();
+    if (bgMusic) {
+      if (state.sound) {
+        bgMusic.play().then(function() { musicStarted = true; }).catch(function(){});
+      } else {
+        bgMusic.pause();
+      }
+    }
+  });
+}
+
+if (mpClose) {
+  mpClose.addEventListener('click', function(e) {
+    e.stopPropagation();
+    if (bgMusic) bgMusic.pause();
+    showMusicPlayer(false);
+    showMusicPill(false);
+  });
 }
 
 /* Update icon based on current state */
@@ -159,6 +242,8 @@ function tryPlayMusic() {
   bgMusic.play().then(function() {
     musicStarted = true;
     showMusicPill(true);
+    showMusicPlayer(true);
+    syncPlayerUI();
   }).catch(function() {});
 }
 
@@ -176,10 +261,16 @@ if (soundBtn) {
     syncSoundIcon();
     if (bgMusic) {
       if (state.sound) {
-        bgMusic.play().then(function() { musicStarted = true; showMusicPill(true); }).catch(function() {});
+        bgMusic.play().then(function() {
+          musicStarted = true;
+          showMusicPill(true);
+          showMusicPlayer(true);
+          syncPlayerUI();
+        }).catch(function() {});
       } else {
         bgMusic.pause();
         showMusicPill(false);
+        showMusicPlayer(false);
       }
     }
     showToast(state.sound ? 'Music on' : 'Music off');

@@ -1249,3 +1249,152 @@ button { touch-action: manipulation; }
   #music-now-playing { bottom: 18px; left: 16px; padding: 7px 14px 7px 11px; }
   .mnp-text { font-size: 0.62rem; }
 }
+#music-now-playing.player-open { bottom: 88px; }
+@media (max-width: 480px) {
+  #music-now-playing.player-open { bottom: 78px; }
+}
+
+/* ── Music Player Bar ── */
+#music-player {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: 72px;
+  background: rgba(6,2,0,0.97);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-top: 1px solid rgba(200,144,10,0.22);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 0 28px;
+  transform: translateY(100%);
+  transition: transform 0.48s cubic-bezier(0.34,1.1,0.64,1);
+  z-index: 7500;
+}
+#music-player.visible { transform: translateY(0); }
+.mp-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 180px;
+}
+/* vinyl disc */
+.mp-disc {
+  width: 46px; height: 46px; min-width: 46px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 38%, #5c2800, #1a0900);
+  border: 2px solid rgba(200,144,10,0.3);
+  position: relative;
+  animation: mpSpin 8s linear infinite;
+  animation-play-state: paused;
+  box-shadow: 0 0 14px rgba(139,37,0,0.35);
+}
+.mp-disc.spinning { animation-play-state: running; }
+.mp-disc::before {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border-radius: 50%;
+  border: 1px solid rgba(200,144,10,0.15);
+}
+.mp-disc::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 8px rgba(200,144,10,0.6);
+}
+@keyframes mpSpin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .mp-disc { animation: none !important; } }
+/* meta */
+.mp-title {
+  font-family: var(--font-sub);
+  font-size: 0.82rem;
+  letter-spacing: 0.05em;
+  color: var(--cream);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  max-width: 140px;
+}
+.mp-artist {
+  font-family: var(--font-sub);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(200,144,10,0.65);
+  margin-top: 3px;
+}
+/* center */
+.mp-center {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+.mp-playbtn {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--red), var(--red-dark));
+  border: none; cursor: pointer; color: white; font-size: 0.85rem;
+  display: flex; align-items: center; justify-content: center;
+  transition: 0.2s; touch-action: manipulation;
+  box-shadow: 0 4px 14px rgba(139,37,0,0.45);
+}
+.mp-playbtn:hover { transform: scale(1.1); box-shadow: 0 6px 20px rgba(139,37,0,0.5); }
+.mp-progress {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.mp-time {
+  font-family: var(--font-sub);
+  font-size: 0.58rem;
+  letter-spacing: 0.04em;
+  color: rgba(253,243,227,0.35);
+  min-width: 28px;
+}
+.mp-time-r { text-align: right; }
+.mp-bar {
+  flex: 1;
+  height: 3px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 99px;
+  cursor: pointer;
+  transition: height 0.15s ease;
+  position: relative;
+}
+.mp-bar:hover { height: 5px; }
+.mp-bar-fill {
+  height: 100%;
+  border-radius: 99px;
+  background: linear-gradient(to right, var(--gold), var(--gold-light));
+  width: 0%;
+  pointer-events: none;
+  transition: width 0.25s linear;
+}
+/* right */
+.mp-right { display: flex; align-items: center; gap: 8px; }
+.mp-icon-btn {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: none;
+  border: 1px solid rgba(200,144,10,0.18);
+  cursor: pointer;
+  color: rgba(253,243,227,0.45);
+  font-size: 0.72rem;
+  display: flex; align-items: center; justify-content: center;
+  transition: 0.2s; touch-action: manipulation;
+}
+.mp-icon-btn:hover { border-color: rgba(200,144,10,0.5); color: var(--gold); background: rgba(200,144,10,0.06); }
+/* mobile */
+@media (max-width: 600px) {
+  #music-player { padding: 0 14px; gap: 12px; height: 64px; }
+  .mp-left { min-width: 0; }
+  .mp-artist, .mp-time { display: none; }
+  .mp-title { max-width: 90px; font-size: 0.74rem; }
+}
