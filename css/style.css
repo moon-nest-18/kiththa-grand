@@ -1183,3 +1183,69 @@ body:has(button:hover) .custom-cursor { width: 28px; height: 28px; background: v
 select, input[type="text"], input[type="email"],
 input[type="number"], input[type="password"] { cursor: pointer; touch-action: manipulation; }
 button { touch-action: manipulation; }
+
+/* ── Music Now Playing ── */
+#music-now-playing {
+  position: fixed;
+  bottom: 28px;
+  left: 28px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 18px 9px 14px;
+  background: rgba(15,5,1,0.78);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(200,144,10,0.4);
+  border-radius: 40px;
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.55s ease, transform 0.55s ease;
+  pointer-events: none;
+  z-index: 8000;
+}
+#music-now-playing.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.mnp-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 14px;
+}
+.mnp-bars span {
+  display: block;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--gold);
+  animation: mnpBar 0.7s ease-in-out infinite alternate;
+}
+.mnp-bars span:nth-child(1) { height: 5px;  animation-delay: 0s;    }
+.mnp-bars span:nth-child(2) { height: 12px; animation-delay: 0.15s; }
+.mnp-bars span:nth-child(3) { height: 8px;  animation-delay: 0.3s;  }
+.mnp-bars span:nth-child(4) { height: 14px; animation-delay: 0.45s; }
+@keyframes mnpBar {
+  from { transform: scaleY(0.25); }
+  to   { transform: scaleY(1); }
+}
+.mnp-bars span { transform-origin: bottom; }
+.mnp-text {
+  font-family: 'Cinzel', serif;
+  font-size: 0.68rem;
+  letter-spacing: 0.13em;
+  color: var(--gold-light);
+  white-space: nowrap;
+}
+.mnp-note {
+  font-size: 0.82rem;
+  color: var(--gold);
+  margin-right: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .mnp-bars span { animation: none !important; height: 8px !important; transform: none !important; }
+}
+@media (max-width: 480px) {
+  #music-now-playing { bottom: 18px; left: 16px; padding: 7px 14px 7px 11px; }
+  .mnp-text { font-size: 0.62rem; }
+}
