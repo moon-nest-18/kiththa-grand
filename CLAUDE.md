@@ -101,7 +101,7 @@ kiththa-grand/
 | Settings     | settings.js    | ⏳ TODO    |
 | About        | about.js       | ⏳ TODO    |
 | Contact      | contact.js     | ⏳ TODO    |
-| Bulk Orders  | bulk-orders.js | ⏳ TODO    |
+| Bulk Orders  | bulk-orders.js | ✅ Done    |
 
 ## Coding Rules (IMPORTANT)
 - NO template literals with nested expressions — use string concatenation instead
