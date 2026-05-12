@@ -161,7 +161,11 @@ function showMusicPill(show) {
 function showMusicPlayer(show) {
   if (!mpPlayer) return;
   mpPlayer.style.display = show ? 'flex' : 'none';
-  if (musicNowPlaying) musicNowPlaying.classList.toggle('player-open', show);
+  /* pill hide when full player is visible — player shows song info already */
+  if (musicNowPlaying) musicNowPlaying.style.display = show ? 'none' : '';
+  /* push page content above player bar */
+  var barH = window.innerWidth <= 600 ? '60px' : '68px';
+  document.body.style.paddingBottom = show ? barH : '';
 }
 
 function syncPlayerUI() {

@@ -58,12 +58,14 @@ const CSS = [
   '.wish-empty-btn:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(139,37,0,.3)}',
 
   /* responsive */
-  '@media(max-width:768px){.wish-grid{grid-template-columns:repeat(2,1fr);gap:16px}}',
-  '@media(max-width:480px){',
-  '.wish-grid{grid-template-columns:repeat(2,1fr);gap:10px}',
-  '.wc-body{padding:12px}',
-  '.wc-name{font-size:.82rem}',
-  '.wc-add{padding:8px 12px;font-size:.58rem}',
+  '@media(max-width:768px){.wish-grid{grid-template-columns:repeat(2,1fr);gap:14px}}',
+  '@media(max-width:520px){',
+  '.wish-grid{grid-template-columns:1fr;gap:12px}',
+  '.wish-card{flex-direction:row;align-items:stretch}',
+  '.wc-img{width:110px;min-width:110px;aspect-ratio:auto;border-radius:0}',
+  '.wc-body{padding:14px 14px 12px;flex:1}',
+  '.wc-footer{flex-direction:row;align-items:center}',
+  '.wc-add{font-size:.62rem;padding:8px 12px}',
   '}',
 ].join('');
 

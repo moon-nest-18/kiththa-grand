@@ -1194,9 +1194,10 @@ body:has(button:hover) .custom-cursor { width: 28px; height: 28px; background: v
   .custom-cursor, .cursor-trail { display: none; }
 }
 @media (max-width: 480px) {
-  .hero { padding: 88px 16px 44px; }
+  .hero { padding: 88px 16px 52px; }
   .hero-title { font-size: clamp(2rem, 10vw, 2.6rem); }
   .hero-eyebrow { font-size: 0.6rem; }
+  .hero-stats { padding-bottom: 8px; }
   .stat-divider { display: none; }
   .stat { min-width: 72px; }
   .stat-num { font-size: 1.3rem; }
