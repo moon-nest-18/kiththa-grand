@@ -322,9 +322,9 @@ function getHTML(user, profile, points, orders) {
 /* ── CSS ── */
 const CSS = `
 .profile-page{min-height:100vh;background:var(--cream);padding-bottom:80px}
-.profile-hero{position:relative;background:var(--brown);padding:120px 0 0;overflow:hidden}
+.profile-hero{position:relative;background:var(--brown);padding:120px 0 80px;overflow:hidden}
 .profile-hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 10% 50%,rgba(139,37,0,.4) 0%,transparent 60%),radial-gradient(ellipse at 90% 30%,rgba(200,144,10,.1) 0%,transparent 50%)}
-.profile-hero-inner{position:relative;z-index:1;display:grid;grid-template-columns:auto 1fr auto auto;align-items:center;gap:28px;padding-bottom:52px}
+.profile-hero-inner{position:relative;z-index:1;display:grid;grid-template-columns:auto 1fr auto auto;align-items:center;gap:28px;padding-bottom:20px}
 .profile-avatar-wrap{position:relative;display:inline-block}
 .profile-avatar{width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,var(--red),var(--red-dark));border:3px solid rgba(200,144,10,.4);display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;box-shadow:0 8px 32px rgba(0,0,0,.3)}
 .profile-avatar img{width:100%;height:100%;object-fit:cover}
@@ -348,7 +348,7 @@ const CSS = `
 .quick-btn i{font-size:1.1rem}
 .quick-btn:hover{background:rgba(200,144,10,.15);border-color:rgba(200,144,10,.35);color:var(--gold-light)}
 #btn-logout:hover{background:rgba(139,37,0,.3);border-color:rgba(139,37,0,.4);color:#fca5a5}
-.profile-body{padding-top:40px}
+.profile-body{margin-top:-60px;position:relative;z-index:2;padding-top:0}
 .profile-grid{display:grid;grid-template-columns:360px 1fr;gap:28px}
 .profile-card{background:white;border-radius:20px;border:1px solid var(--cream-dark);padding:28px;margin-bottom:24px;box-shadow:var(--shadow-sm)}
 .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
