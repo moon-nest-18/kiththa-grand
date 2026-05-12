@@ -15,7 +15,7 @@ const PRODUCTS_CSS = [
   '.products-page{min-height:100vh;background:var(--cream)}',
 
   /* Hero banner */
-  '.products-hero{background:#0a0502;padding:72px 0 28px;position:relative;overflow:hidden}',
+  '.products-hero{background:#0a0502;padding:96px 0 48px;position:relative;overflow:hidden}',
   '.products-hero-bg{position:absolute;inset:0;background:'
     + 'radial-gradient(ellipse at 30% 50%,rgba(139,37,0,.85) 0%,rgba(61,28,2,.95) 60%,#0a0502 100%)}',
   '.products-hero-overlay{position:absolute;inset:0;background-image:'
