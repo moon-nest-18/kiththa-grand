@@ -699,7 +699,7 @@ body:has(button:hover) .custom-cursor { width: 28px; height: 28px; background: v
   z-index: 2;
 }
 .cat-card:hover .cat-emoji {
-  transform: translateX(-50%) translateY(-8px) scale(1.12);
+  transform: translateX(-50%) scale(1.08);
 }
 
 /* Bottom gradient */

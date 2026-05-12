@@ -67,12 +67,19 @@
 
 /* ── Page Transition ── */
 @keyframes pageIn {
-  from { opacity: 0; transform: translateY(10px); }
+  from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 .page.active {
-  animation: pageIn 0.25s ease forwards;
+  animation: pageIn 0.28s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
+
+/* ── Skeleton pulse (smoother than shimmer on slow connections) ── */
+@keyframes skeletonPulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.55; }
+}
+.page:not(.active) { display: none; }
 
 /* ── Pulse (for badges) ── */
 @keyframes pulse {

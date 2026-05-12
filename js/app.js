@@ -348,7 +348,7 @@ export async function loadCategories() {
       + imgHTML
       + '<div class="cat-pattern"></div>'
       + '<div class="cat-ring"></div>'
-      + '<div class="cat-emoji">' + emoji + '</div>'
+      + (cat.image_url ? '' : '<div class="cat-emoji">' + emoji + '</div>')
       + '<div class="cat-gradient"></div>'
       + '<div class="cat-content">'
       + '<h3 class="cat-name">' + cat.name + '</h3>'

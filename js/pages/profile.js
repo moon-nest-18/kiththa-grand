@@ -63,8 +63,8 @@ function getHTML(user, profile, points, orders) {
               ${profile?.avatar_url
                 ? `<img src="${profile.avatar_url}" alt="Avatar" />`
                 : `<span class="avatar-initials">${initials}</span>`}
-              <button class="avatar-edit-btn" title="Change photo"><i class="fas fa-camera"></i></button>
             </div>
+            <button class="avatar-edit-btn" title="Change photo"><i class="fas fa-camera"></i></button>
             <div class="profile-online-dot"></div>
           </div>
 
@@ -322,14 +322,14 @@ function getHTML(user, profile, points, orders) {
 /* ── CSS ── */
 const CSS = `
 .profile-page{min-height:100vh;background:var(--cream);padding-bottom:80px}
-.profile-hero{position:relative;background:var(--brown);padding:100px 0 0;overflow:hidden}
+.profile-hero{position:relative;background:var(--brown);padding:72px 0 0;overflow:hidden}
 .profile-hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 10% 50%,rgba(139,37,0,.4) 0%,transparent 60%),radial-gradient(ellipse at 90% 30%,rgba(200,144,10,.1) 0%,transparent 50%)}
-.profile-hero-inner{position:relative;z-index:1;display:grid;grid-template-columns:auto 1fr auto auto;align-items:center;gap:28px;padding-bottom:40px}
+.profile-hero-inner{position:relative;z-index:1;display:grid;grid-template-columns:auto 1fr auto auto;align-items:center;gap:28px;padding-bottom:22px}
 .profile-avatar-wrap{position:relative;display:inline-block}
 .profile-avatar{width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,var(--red),var(--red-dark));border:3px solid rgba(200,144,10,.4);display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;box-shadow:0 8px 32px rgba(0,0,0,.3)}
 .profile-avatar img{width:100%;height:100%;object-fit:cover}
 .avatar-initials{font-family:var(--font-head);font-size:2rem;color:var(--gold-light)}
-.avatar-edit-btn{position:absolute;bottom:0;right:0;width:30px;height:30px;border-radius:50%;background:var(--gold);color:var(--brown);font-size:.75rem;display:flex;align-items:center;justify-content:center;transition:var(--transition)}
+.avatar-edit-btn{position:absolute;bottom:2px;right:2px;width:28px;height:28px;border-radius:50%;background:var(--gold);color:var(--brown);font-size:.72rem;display:flex;align-items:center;justify-content:center;transition:var(--transition);z-index:2;box-shadow:0 2px 6px rgba(0,0,0,.3)}
 .avatar-edit-btn:hover{background:var(--gold-light);transform:scale(1.1)}
 .profile-online-dot{position:absolute;top:4px;right:4px;width:14px;height:14px;border-radius:50%;background:#22c55e;border:2px solid var(--brown)}
 .profile-greeting{font-style:italic;font-size:.85rem;color:var(--gold);margin-bottom:4px}
