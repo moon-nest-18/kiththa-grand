@@ -126,17 +126,51 @@ export function formatPrice(lkrPrice) {
 }
 
 /* ────────────────────────────────────────────────────────────────
-   SOUND
+   BACKGROUND MUSIC
 ──────────────────────────────────────────────────────────────── */
 const soundBtn = document.getElementById('sound-toggle');
+const bgMusic  = document.getElementById('bg-music');
+var musicStarted = false;
 
+if (bgMusic) {
+  bgMusic.volume = 0.3;
+}
+
+/* Update icon based on current state */
+function syncSoundIcon() {
+  if (!soundBtn) return;
+  soundBtn.querySelector('i').className = state.sound
+    ? 'fas fa-volume-up' : 'fas fa-volume-mute';
+}
+
+/* Try to play music (must be called after a user gesture) */
+function tryPlayMusic() {
+  if (!bgMusic || !state.sound || musicStarted) return;
+  bgMusic.play().then(function() {
+    musicStarted = true;
+  }).catch(function() {});
+}
+
+/* Start on first interaction anywhere on the page */
+document.addEventListener('click', function() {
+  tryPlayMusic();
+}, { once: true });
+
+/* Sound toggle button */
 if (soundBtn) {
+  syncSoundIcon();
   soundBtn.addEventListener('click', function() {
     state.sound = !state.sound;
     localStorage.setItem('kg_sound', state.sound ? 'on' : 'off');
-    soundBtn.querySelector('i').className = state.sound
-      ? 'fas fa-volume-up' : 'fas fa-volume-mute';
-    showToast(state.sound ? 'Sounds on' : 'Sounds off');
+    syncSoundIcon();
+    if (bgMusic) {
+      if (state.sound) {
+        bgMusic.play().then(function() { musicStarted = true; }).catch(function() {});
+      } else {
+        bgMusic.pause();
+      }
+    }
+    showToast(state.sound ? 'Music on 🎵' : 'Music off 🔇');
   });
 }
 
