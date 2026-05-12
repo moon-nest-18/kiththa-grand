@@ -93,7 +93,7 @@ kiththa-grand/
 | Profile      | profile.js     | ✅ Done    |
 | Admin        | admin.js       | ✅ Done    |
 | Products     | products.js    | ✅ Done    |
-| Product      | product.js     | ⏳ TODO    |
+| Product      | product.js     | ✅ Done    |
 | Cart         | cart.js        | ⏳ TODO    |
 | Checkout     | checkout.js    | ⏳ TODO    |
 | Wishlist     | wishlist.js    | ⏳ TODO    |
