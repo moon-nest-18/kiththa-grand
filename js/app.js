@@ -80,9 +80,6 @@ document.addEventListener('click', function(e) {
   var navParams = {};
   if (el.dataset.cat) navParams.cat = el.dataset.cat;
   router.go(page, navParams);
-  document.querySelectorAll('.nav-link').forEach(function(l) {
-    l.classList.toggle('active', l.dataset.page === page);
-  });
 });
 
 /* ────────────────────────────────────────────────────────────────
