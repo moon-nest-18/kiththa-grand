@@ -101,12 +101,11 @@ async function renderBody(container) {
     return;
   }
 
-  /* load full product data */
+  /* load full product data (no FK join, no is_active filter) */
   var result = await supabase
     .from('products')
-    .select('*, category:categories(name)')
-    .in('id', state.wishlist)
-    .eq('is_active', true);
+    .select('id, name, name_si, images, price_lkr, weight_grams, origin, category_id')
+    .in('id', state.wishlist);
 
   var products = result.data;
 
@@ -127,7 +126,7 @@ async function renderBody(container) {
           + '<button class="wc-heart js-unwish" data-id="' + p.id + '" title="Remove from wishlist"><i class="fas fa-heart"></i></button>'
         + '</div>'
         + '<div class="wc-body">'
-          + '<p class="wc-cat">' + (p.category ? p.category.name : 'Spices') + '</p>'
+          + '<p class="wc-cat">Ceylon Spices</p>'
           + '<p class="wc-name js-pd" data-id="' + p.id + '">' + p.name + '</p>'
           + '<p class="wc-meta">' + (p.weight_grams || '') + 'g &middot; ' + (p.origin || 'Sri Lanka') + '</p>'
           + '<div class="wc-footer">'

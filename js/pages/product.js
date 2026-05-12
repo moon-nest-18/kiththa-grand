@@ -622,16 +622,16 @@ export async function init(container, params) {
     + '</div>';
 
   try {
-    /* Fetch product */
+    /* Fetch product (no FK join) */
     var pRes = await supabase
       .from('products')
-      .select('*, category:categories(name, slug)')
+      .select('*')
       .eq('id', productId)
       .single();
 
     if (pRes.error || !pRes.data) {
       container.innerHTML = '<div class="pd-not-found">'
-        + '<div class="nf-icon">🌶️</div>'
+        + '<div class="nf-icon">&#127798;</div>'
         + '<h2>Product not found</h2>'
         + '<p>This spice may have been removed or is unavailable.</p>'
         + '</div>';
@@ -640,23 +640,28 @@ export async function init(container, params) {
 
     var product = pRes.data;
 
-    /* Fetch reviews + related in parallel */
+    /* Fetch category, reviews, related separately (avoids FK dependency) */
+    var catProm = product.category_id
+      ? supabase.from('categories').select('name, slug').eq('id', product.category_id).single()
+      : Promise.resolve({ data: null });
+
     var results = await Promise.all([
+      catProm,
       supabase.from('reviews')
-        .select('id, rating, comment, created_at, user:users(full_name, email)')
+        .select('id, rating, comment, created_at, user_id')
         .eq('product_id', productId)
         .eq('is_approved', true)
         .order('created_at', { ascending: false }),
       supabase.from('products')
-        .select('id, name, images, price_lkr, weight_grams, category:categories(name)')
+        .select('id, name, images, price_lkr, weight_grams')
         .eq('category_id', product.category_id)
-        .eq('is_active', true)
         .neq('id', productId)
         .limit(4),
     ]);
 
-    var reviews = results[0].data || [];
-    var related = results[1].data || [];
+    if (results[0].data) product.category = results[0].data;
+    var reviews = results[1].data || [];
+    var related = results[2].data || [];
 
     /* Render */
     container.innerHTML = buildPage(product, reviews, related);

@@ -160,7 +160,7 @@ function showMusicPill(show) {
 
 function showMusicPlayer(show) {
   if (!mpPlayer) return;
-  mpPlayer.classList.toggle('visible', show);
+  mpPlayer.style.display = show ? 'flex' : 'none';
   if (musicNowPlaying) musicNowPlaying.classList.toggle('player-open', show);
 }
 
@@ -371,11 +371,18 @@ supabase.auth.onAuthStateChange(function(event, session) {
 ──────────────────────────────────────────────────────────────── */
 export async function loadCart() {
   if (!state.user) return;
-  const { data } = await supabase
+  var { data: items } = await supabase
     .from('cart')
-    .select('*, product:products(*)')
+    .select('id, product_id, quantity, user_id')
     .eq('user_id', state.user.id);
-  state.cart = data || [];
+  if (!items || !items.length) { state.cart = []; updateCartBadge(0); return; }
+  var ids = items.map(function(c) { return c.product_id; });
+  var { data: prods } = await supabase.from('products').select('*').in('id', ids);
+  var map = {};
+  (prods || []).forEach(function(p) { map[p.id] = p; });
+  state.cart = items.map(function(c) {
+    return { id: c.id, user_id: c.user_id, product_id: c.product_id, quantity: c.quantity, product: map[c.product_id] || null };
+  });
   updateCartBadge(state.cart.length);
 }
 
