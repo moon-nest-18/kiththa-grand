@@ -15,10 +15,11 @@ const PRODUCTS_CSS = [
   '.products-page{min-height:100vh;background:var(--cream)}',
 
   /* Hero banner */
-  '.products-hero{background:var(--brown);padding:100px 0 44px;position:relative;overflow:hidden}',
-  '.products-hero-bg{position:absolute;inset:0;background-image:',
-    'radial-gradient(circle at 20% 60%,rgba(139,37,0,.4) 0%,transparent 55%),',
-    'radial-gradient(circle at 80% 40%,rgba(200,144,10,.12) 0%,transparent 55%)}',
+  '.products-hero{background:#0a0502;padding:100px 0 44px;position:relative;overflow:hidden}',
+  '.products-hero-bg{position:absolute;inset:0;background:'
+    + 'radial-gradient(ellipse at 30% 50%,rgba(139,37,0,.85) 0%,rgba(61,28,2,.95) 60%,#0a0502 100%)}',
+  '.products-hero-overlay{position:absolute;inset:0;background-image:'
+    + 'repeating-linear-gradient(45deg,transparent,transparent 40px,rgba(200,144,10,.03) 40px,rgba(200,144,10,.03) 80px)}',
   '.products-hero .container{position:relative;z-index:1}',
   '.products-hero-eyebrow{font-family:var(--font-sub);font-size:.65rem;letter-spacing:.24em;',
     'text-transform:uppercase;color:var(--gold);margin-bottom:12px}',
@@ -116,6 +117,7 @@ function buildShell() {
     /* Hero */
     + '<div class="products-hero">'
     + '<div class="products-hero-bg"></div>'
+    + '<div class="products-hero-overlay"></div>'
     + '<div class="container">'
     + '<p class="products-hero-eyebrow">Pure Ceylon Collection</p>'
     + '<h1>Our Spices</h1>'
