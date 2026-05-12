@@ -132,105 +132,33 @@ export function formatPrice(lkrPrice) {
 const soundBtn        = document.getElementById('sound-toggle');
 const bgMusic         = document.getElementById('bg-music');
 const musicNowPlaying = document.getElementById('music-now-playing');
-const mpPlayer        = document.getElementById('music-player');
-const mpDisc          = document.getElementById('mp-disc');
-const mpPlayBtn       = document.getElementById('mp-playbtn');
-const mpMuteBtn       = document.getElementById('mp-mutebtn');
-const mpBar           = document.getElementById('mp-bar');
-const mpBarFill       = document.getElementById('mp-bar-fill');
-const mpCurTime       = document.getElementById('mp-cur-time');
-const mpDurTime       = document.getElementById('mp-dur-time');
-const mpClose         = document.getElementById('mp-close');
+const mnpToggle       = document.getElementById('mnp-toggle');
 var musicStarted = false;
 
 if (bgMusic) bgMusic.volume = 0.3;
 
-function fmtTime(sec) {
-  if (!sec || !isFinite(sec)) return '--:--';
-  var m = Math.floor(sec / 60);
-  var s = Math.floor(sec % 60);
-  return m + ':' + (s < 10 ? '0' : '') + s;
+function syncPillIcon() {
+  if (!mnpToggle || !bgMusic) return;
+  mnpToggle.querySelector('i').className = bgMusic.paused ? 'fas fa-play' : 'fas fa-pause';
 }
 
 function showMusicPill(show) {
   if (!musicNowPlaying) return;
   musicNowPlaying.classList.toggle('visible', show);
-  musicNowPlaying.classList.toggle('player-open', show && mpPlayer && mpPlayer.classList.contains('visible'));
+  syncPillIcon();
 }
 
-function showMusicPlayer(show) {
-  if (!mpPlayer) return;
-  mpPlayer.style.display = show ? 'flex' : 'none';
-  /* pill hide when full player is visible — player shows song info already */
-  if (musicNowPlaying) musicNowPlaying.style.display = show ? 'none' : '';
-  /* push page content above player bar */
-  var barH = window.innerWidth <= 600 ? '60px' : '68px';
-  document.body.style.paddingBottom = show ? barH : '';
-}
-
-function syncPlayerUI() {
-  if (!bgMusic) return;
-  var playing = !bgMusic.paused;
-  if (mpPlayBtn) mpPlayBtn.querySelector('i').className = playing ? 'fas fa-pause' : 'fas fa-play';
-  if (mpDisc)    mpDisc.classList.toggle('spinning', playing);
-  if (mpMuteBtn) mpMuteBtn.querySelector('i').className = state.sound ? 'fas fa-volume-up' : 'fas fa-volume-mute';
-}
-
-if (bgMusic) {
-  bgMusic.addEventListener('timeupdate', function() {
-    if (!bgMusic.duration) return;
-    var pct = (bgMusic.currentTime / bgMusic.duration) * 100;
-    if (mpBarFill) mpBarFill.style.width = pct + '%';
-    if (mpCurTime) mpCurTime.textContent = fmtTime(bgMusic.currentTime);
-    if (mpDurTime) mpDurTime.textContent = fmtTime(bgMusic.duration);
-  });
-  bgMusic.addEventListener('play',  syncPlayerUI);
-  bgMusic.addEventListener('pause', syncPlayerUI);
-}
-
-if (mpPlayBtn) {
-  mpPlayBtn.addEventListener('click', function(e) {
+/* Pill toggle button — play / pause */
+if (mnpToggle) {
+  mnpToggle.addEventListener('click', function(e) {
     e.stopPropagation();
     if (!bgMusic) return;
     if (bgMusic.paused) {
-      bgMusic.play().then(function() { musicStarted = true; syncPlayerUI(); }).catch(function(){});
+      bgMusic.play().then(function() { musicStarted = true; syncPillIcon(); }).catch(function(){});
     } else {
       bgMusic.pause();
+      syncPillIcon();
     }
-  });
-}
-
-if (mpBar) {
-  mpBar.addEventListener('click', function(e) {
-    if (!bgMusic || !bgMusic.duration) return;
-    var rect = mpBar.getBoundingClientRect();
-    bgMusic.currentTime = ((e.clientX - rect.left) / rect.width) * bgMusic.duration;
-  });
-}
-
-if (mpMuteBtn) {
-  mpMuteBtn.addEventListener('click', function(e) {
-    e.stopPropagation();
-    state.sound = !state.sound;
-    localStorage.setItem('kg_sound', state.sound ? 'on' : 'off');
-    syncSoundIcon();
-    syncPlayerUI();
-    if (bgMusic) {
-      if (state.sound) {
-        bgMusic.play().then(function() { musicStarted = true; }).catch(function(){});
-      } else {
-        bgMusic.pause();
-      }
-    }
-  });
-}
-
-if (mpClose) {
-  mpClose.addEventListener('click', function(e) {
-    e.stopPropagation();
-    if (bgMusic) bgMusic.pause();
-    showMusicPlayer(false);
-    showMusicPill(false);
   });
 }
 
@@ -247,17 +175,15 @@ function tryPlayMusic() {
   bgMusic.play().then(function() {
     musicStarted = true;
     showMusicPill(true);
-    showMusicPlayer(true);
-    syncPlayerUI();
   }).catch(function() {});
 }
 
-/* Start on first interaction — keep listener until music actually starts */
+/* Start on first interaction */
 document.addEventListener('click', function() {
   if (!musicStarted && state.sound) tryPlayMusic();
 });
 
-/* Sound toggle button */
+/* Sound toggle button in navbar */
 if (soundBtn) {
   syncSoundIcon();
   soundBtn.addEventListener('click', function() {
@@ -269,13 +195,10 @@ if (soundBtn) {
         bgMusic.play().then(function() {
           musicStarted = true;
           showMusicPill(true);
-          showMusicPlayer(true);
-          syncPlayerUI();
         }).catch(function() {});
       } else {
         bgMusic.pause();
         showMusicPill(false);
-        showMusicPlayer(false);
       }
     }
     showToast(state.sound ? 'Music on' : 'Music off');

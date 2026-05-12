@@ -24,146 +24,6 @@
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="css/animations.css" />
 
-  <style>
-    #music-player {
-      position: fixed;
-      bottom: 0; left: 0; right: 0;
-      height: 68px;
-      background: rgba(6,2,0,0.96);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-top: 1px solid rgba(200,144,10,0.22);
-      display: none;
-      flex-direction: row;
-      align-items: center;
-      gap: 16px;
-      padding: 0 28px;
-      z-index: 7500;
-      box-sizing: border-box;
-    }
-    #music-now-playing.player-open { bottom: 82px; }
-    .mp-disc {
-      width: 44px; height: 44px; min-width: 44px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 38% 38%, #5c2800, #1a0900);
-      border: 2px solid rgba(200,144,10,0.3);
-      position: relative;
-      flex-shrink: 0;
-      animation: mpSpin 8s linear infinite;
-      animation-play-state: paused;
-      box-shadow: 0 0 14px rgba(139,37,0,0.35);
-    }
-    .mp-disc.spinning { animation-play-state: running; }
-    .mp-disc::before {
-      content: '';
-      position: absolute;
-      inset: 7px;
-      border-radius: 50%;
-      border: 1px solid rgba(200,144,10,0.15);
-    }
-    .mp-disc::after {
-      content: '';
-      position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      width: 9px; height: 9px;
-      border-radius: 50%;
-      background: #C8900A;
-      box-shadow: 0 0 6px rgba(200,144,10,0.7);
-    }
-    @keyframes mpSpin { to { transform: rotate(360deg); } }
-    @media (prefers-reduced-motion: reduce) { .mp-disc { animation: none !important; } }
-    .mp-meta { flex-shrink: 0; }
-    .mp-title {
-      font-family: 'Cinzel', serif;
-      font-size: 0.82rem;
-      letter-spacing: 0.06em;
-      color: #fdf3e3;
-      white-space: nowrap;
-      line-height: 1;
-    }
-    .mp-artist {
-      font-family: 'Cinzel', serif;
-      font-size: 0.58rem;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: rgba(200,144,10,0.65);
-      margin-top: 4px;
-      line-height: 1;
-    }
-    .mp-playbtn {
-      width: 38px; height: 38px; min-width: 38px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #8B2500, #6B1A00);
-      border: none;
-      cursor: pointer;
-      color: #fff;
-      font-size: 0.85rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: transform 0.2s;
-      touch-action: manipulation;
-      box-shadow: 0 4px 12px rgba(139,37,0,0.45);
-      flex-shrink: 0;
-    }
-    .mp-playbtn:hover { transform: scale(1.1); }
-    .mp-progress {
-      flex: 1;
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      gap: 10px;
-      min-width: 0;
-    }
-    .mp-time {
-      font-family: 'Cinzel', serif;
-      font-size: 0.56rem;
-      color: rgba(253,243,227,0.35);
-      flex-shrink: 0;
-      width: 28px;
-    }
-    .mp-bar {
-      flex: 1;
-      height: 3px;
-      background: rgba(255,255,255,0.1);
-      border-radius: 99px;
-      cursor: pointer;
-      position: relative;
-      transition: height 0.15s;
-      min-width: 40px;
-    }
-    .mp-bar:hover { height: 5px; }
-    .mp-bar-fill {
-      height: 100%;
-      border-radius: 99px;
-      background: linear-gradient(to right, #C8900A, #F0B429);
-      width: 0%;
-      pointer-events: none;
-    }
-    .mp-icon-btn {
-      width: 32px; height: 32px; min-width: 32px;
-      border-radius: 50%;
-      background: none;
-      border: 1px solid rgba(200,144,10,0.2);
-      cursor: pointer;
-      color: rgba(253,243,227,0.4);
-      font-size: 0.72rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: 0.2s;
-      touch-action: manipulation;
-      flex-shrink: 0;
-    }
-    .mp-icon-btn:hover { border-color: rgba(200,144,10,0.55); color: #C8900A; }
-    @media (max-width: 600px) {
-      #music-player { padding: 0 14px; gap: 10px; height: 60px; }
-      .mp-meta, .mp-time { display: none; }
-      .mp-playbtn { width: 34px; height: 34px; min-width: 34px; font-size: .78rem; }
-      .mp-icon-btn { width: 28px; height: 28px; min-width: 28px; font-size: .65rem; }
-    }
-  </style>
 </head>
 <body>
 
@@ -652,25 +512,10 @@
     <div class="mnp-bars">
       <span></span><span></span><span></span><span></span>
     </div>
-    <span class="mnp-note">&#9834;</span>
     <span class="mnp-text">CEYLON BREEZE</span>
-  </div>
-
-  <!-- Music Player Bar -->
-  <div id="music-player">
-    <div id="mp-disc" class="mp-disc"></div>
-    <div class="mp-meta">
-      <p class="mp-title">Ceylon Breeze</p>
-      <p class="mp-artist">Kiththa Grand</p>
-    </div>
-    <button id="mp-playbtn" class="mp-playbtn"><i class="fas fa-pause"></i></button>
-    <div class="mp-progress">
-      <span id="mp-cur-time" class="mp-time">0:00</span>
-      <div id="mp-bar" class="mp-bar"><div id="mp-bar-fill" class="mp-bar-fill"></div></div>
-      <span id="mp-dur-time" class="mp-time">--:--</span>
-    </div>
-    <button id="mp-mutebtn" class="mp-icon-btn" title="Mute"><i class="fas fa-volume-up"></i></button>
-    <button id="mp-close" class="mp-icon-btn" title="Close player"><i class="fas fa-times"></i></button>
+    <button class="mnp-toggle" id="mnp-toggle" title="Play / Pause">
+      <i class="fas fa-pause"></i>
+    </button>
   </div>
 
   <!-- ============================================================

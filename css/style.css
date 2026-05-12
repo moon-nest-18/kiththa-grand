@@ -1235,8 +1235,8 @@ button { touch-action: manipulation; }
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 9px 18px 9px 14px;
-  background: rgba(15,5,1,0.78);
+  padding: 9px 12px 9px 14px;
+  background: rgba(15,5,1,0.85);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border: 1px solid rgba(200,144,10,0.4);
@@ -1246,10 +1246,12 @@ button { touch-action: manipulation; }
   transition: opacity 0.55s ease, transform 0.55s ease;
   pointer-events: none;
   z-index: 8000;
+  cursor: default;
 }
 #music-now-playing.visible {
   opacity: 1;
   transform: translateY(0);
+  pointer-events: auto;
 }
 .mnp-bars {
   display: flex;
@@ -1280,15 +1282,28 @@ button { touch-action: manipulation; }
   color: var(--gold-light);
   white-space: nowrap;
 }
-.mnp-note {
-  font-size: 0.82rem;
+.mnp-toggle {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: rgba(200,144,10,0.18);
+  border: 1px solid rgba(200,144,10,0.35);
+  cursor: pointer;
   color: var(--gold);
-  margin-right: 2px;
+  font-size: 0.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, transform 0.15s;
+  touch-action: manipulation;
+  flex-shrink: 0;
+  margin-left: 2px;
 }
+.mnp-toggle:hover { background: rgba(200,144,10,0.32); transform: scale(1.12); }
 @media (prefers-reduced-motion: reduce) {
   .mnp-bars span { animation: none !important; height: 8px !important; transform: none !important; }
 }
 @media (max-width: 480px) {
-  #music-now-playing { bottom: 18px; left: 16px; padding: 7px 14px 7px 11px; }
+  #music-now-playing { bottom: 16px; left: 14px; padding: 7px 10px 7px 12px; gap: 8px; }
   .mnp-text { font-size: 0.62rem; }
+  .mnp-toggle { width: 24px; height: 24px; font-size: 0.55rem; }
 }
