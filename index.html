@@ -135,13 +135,26 @@
     <!-- Mobile Menu -->
     <div id="mobile-menu" class="mobile-menu">
       <ul>
-        <li><a href="#" data-page="home">Home</a></li>
-        <li><a href="#" data-page="products">Products</a></li>
-        <li><a href="#" data-page="bulk-orders">Bulk Orders</a></li>
-        <li><a href="#" data-page="about">Our Story</a></li>
-        <li><a href="#" data-page="contact">Contact</a></li>
-        <li><a href="#" data-page="login">Sign In</a></li>
+        <li><a href="#" data-page="home"><i class="fas fa-home"></i> Home</a></li>
+        <li><a href="#" data-page="products"><i class="fas fa-pepper-hot"></i> Products</a></li>
+        <li><a href="#" data-page="bulk-orders"><i class="fas fa-industry"></i> Bulk Orders</a></li>
+        <li><a href="#" data-page="about"><i class="fas fa-leaf"></i> Our Story</a></li>
+        <li><a href="#" data-page="contact"><i class="fas fa-envelope"></i> Contact</a></li>
       </ul>
+      <div class="mobile-menu-actions">
+        <a href="#" data-page="wishlist" class="mob-action-btn"><i class="far fa-heart"></i> Wishlist</a>
+        <a href="#" data-page="cart"     class="mob-action-btn"><i class="fas fa-shopping-basket"></i> Cart</a>
+        <a href="#" data-page="login"    class="mob-action-btn" id="mob-auth-btn"><i class="fas fa-user"></i> Sign In</a>
+      </div>
+      <div class="mobile-menu-currency">
+        <span><i class="fas fa-coins"></i> Currency</span>
+        <select id="mobile-currency-select" class="mob-currency-sel">
+          <option value="LKR">🇱🇰 LKR</option>
+          <option value="USD">🇺🇸 USD</option>
+          <option value="EUR">🇪🇺 EUR</option>
+          <option value="GBP">🇬🇧 GBP</option>
+        </select>
+      </div>
     </div>
   </nav>
 

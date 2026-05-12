@@ -326,16 +326,47 @@ body:has(button:hover) .custom-cursor { width: 28px; height: 28px; background: v
   padding: 16px 32px 24px;
 }
 .mobile-menu.open { display: block; }
-.mobile-menu ul { display: flex; flex-direction: column; gap: 4px; }
-.mobile-menu a {
-  display: block; padding: 12px 16px;
-  font-family: var(--font-sub); font-size: 0.85rem;
+.mobile-menu ul { display: flex; flex-direction: column; gap: 2px; margin-bottom: 12px; }
+.mobile-menu ul a {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px;
+  font-family: var(--font-sub); font-size: 0.82rem;
   letter-spacing: 0.1em; text-transform: uppercase;
   color: var(--brown-light);
   border-radius: 10px;
   transition: var(--transition);
 }
-.mobile-menu a:hover { background: rgba(139,37,0,0.08); color: var(--red); }
+.mobile-menu ul a i { width: 16px; text-align: center; color: var(--gold); font-size: .9rem; }
+.mobile-menu ul a:hover { background: rgba(139,37,0,0.08); color: var(--red); }
+.mobile-menu-actions {
+  display: flex; gap: 8px; padding: 12px 0;
+  border-top: 1px solid var(--cream-dark);
+}
+.mob-action-btn {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  gap: 7px; padding: 10px 8px;
+  font-family: var(--font-sub); font-size: 0.72rem;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--brown-light); border-radius: 10px;
+  border: 1px solid var(--cream-dark);
+  transition: var(--transition);
+}
+.mob-action-btn:hover { background: rgba(139,37,0,0.06); color: var(--red); border-color: var(--red); }
+.mobile-menu-currency {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 4px 4px;
+  border-top: 1px solid var(--cream-dark);
+  font-family: var(--font-sub); font-size: 0.75rem;
+  color: var(--brown-light);
+}
+.mobile-menu-currency i { color: var(--gold); margin-right: 6px; }
+.mob-currency-sel {
+  padding: 7px 12px; border-radius: 8px;
+  border: 1px solid var(--cream-dark);
+  background: var(--cream); color: var(--brown);
+  font-family: var(--font-sub); font-size: 0.78rem;
+  outline: none;
+}
 
 /* ── Pages ── */
 .page { display: none; }
@@ -1126,17 +1157,29 @@ body:has(button:hover) .custom-cursor { width: 28px; height: 28px; background: v
   .nav-actions .icon-btn:not(.cart-btn),
   .btn-auth { display: none; }
   .hamburger { display: flex; }
+  .nav-inner { padding: 0 16px; gap: 10px; }
   .section { padding: 70px 0; }
   .hero { padding: 100px 24px 60px; }
-  .container { padding: 0 24px; }
+  .container { padding: 0 16px; }
   .footer-grid { grid-template-columns: 1fr; }
   .loyalty-inner { flex-direction: column; text-align: center; }
   .hero-stats { gap: 16px; }
   body { cursor: auto; }
   .custom-cursor, .cursor-trail { display: none; }
+  /* Products 2-column grid on tablet */
+  .products-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
 }
 @media (max-width: 480px) {
   .categories-grid { grid-template-columns: 1fr 1fr; gap: 16px; }
   .cat-card { padding: 28px 20px; }
   .hero-title { font-size: 2.8rem; }
+  /* Products 2-column on small phones */
+  .products-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .product-card .product-name { font-size: .85rem; }
+  .product-card .product-price { font-size: .95rem; }
+  .product-card .product-info { padding: 12px; }
 }
+/* Select/button touch fix — cursor:none breaks nothing on touch but keep pointer */
+select, input[type="text"], input[type="email"],
+input[type="number"], input[type="password"] { cursor: pointer; touch-action: manipulation; }
+button { touch-action: manipulation; }

@@ -10,7 +10,7 @@ import { showToast, initReveals } from '../app.js';
 
 /* ── CSS ── */
 const ADMIN_CSS = [
-  '.admin-page{min-height:100vh;background:#1c1008;display:flex;font-family:var(--font-body)}',
+  '.admin-page{min-height:100vh;background:#1c1008;display:flex;font-family:"Inter",system-ui,-apple-system,sans-serif}',
   '.admin-sidebar{width:260px;background:#241408;border-right:1px solid rgba(200,144,10,.15);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;transition:transform .3s}',
   '.admin-sidebar.collapsed{transform:translateX(-260px)}',
   '.sidebar-logo{padding:20px;border-bottom:1px solid rgba(200,144,10,.12);display:flex;align-items:center;gap:12px}',
@@ -227,6 +227,12 @@ export async function init(container) {
     return;
   }
 
+  if (!document.getElementById('admin-font')) {
+    const f = document.createElement('link');
+    f.id = 'admin-font'; f.rel = 'stylesheet';
+    f.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap';
+    document.head.appendChild(f);
+  }
   if (!document.getElementById('admin-styles')) {
     const s = document.createElement('style');
     s.id = 'admin-styles'; s.textContent = ADMIN_CSS;

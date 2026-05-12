@@ -104,15 +104,19 @@ export function initReveals() { observeReveals(); }
    CURRENCY
 ──────────────────────────────────────────────────────────────── */
 const currencySelect = document.getElementById('currency-select');
+const mobileCurrencySel = document.getElementById('mobile-currency-select');
 if (currencySelect) currencySelect.value = state.currency;
+if (mobileCurrencySel) mobileCurrencySel.value = state.currency;
 
-if (currencySelect) {
-  currencySelect.addEventListener('change', function(e) {
-    state.currency = e.target.value;
-    localStorage.setItem('kg_currency', state.currency);
-    document.dispatchEvent(new CustomEvent('currencyChange', { detail: state.currency }));
-  });
+function onCurrencyChange(val) {
+  state.currency = val;
+  localStorage.setItem('kg_currency', val);
+  if (currencySelect) currencySelect.value = val;
+  if (mobileCurrencySel) mobileCurrencySel.value = val;
+  document.dispatchEvent(new CustomEvent('currencyChange', { detail: val }));
 }
+if (currencySelect) currencySelect.addEventListener('change', function(e) { onCurrencyChange(e.target.value); });
+if (mobileCurrencySel) mobileCurrencySel.addEventListener('change', function(e) { onCurrencyChange(e.target.value); });
 
 export function formatPrice(lkrPrice) {
   const rate    = state.rates[state.currency] || 1;
@@ -165,15 +169,18 @@ const authBtn = document.getElementById('auth-btn');
 
 function updateAuthUI(user) {
   if (!authBtn) return;
+  var mobAuthBtn = document.getElementById('mob-auth-btn');
   if (user) {
     authBtn.innerHTML = '<i class="fas fa-user-check"></i><span>Account</span>';
     authBtn.dataset.page = 'profile';
+    if (mobAuthBtn) { mobAuthBtn.innerHTML = '<i class="fas fa-user-check"></i> Account'; mobAuthBtn.dataset.page = 'profile'; }
     state.user = user;
     loadCart();
     loadWishlist();
   } else {
     authBtn.innerHTML = '<i class="fas fa-user"></i><span>Sign In</span>';
     authBtn.dataset.page = 'login';
+    if (mobAuthBtn) { mobAuthBtn.innerHTML = '<i class="fas fa-user"></i> Sign In'; mobAuthBtn.dataset.page = 'login'; }
     state.user = null;
     updateCartBadge(0);
     updateWishlistBadge(0);
