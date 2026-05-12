@@ -1249,5 +1249,3 @@ button { touch-action: manipulation; }
   #music-now-playing { bottom: 18px; left: 16px; padding: 7px 14px 7px 11px; }
   .mnp-text { font-size: 0.62rem; }
 }
-#music-now-playing.player-open { bottom: 82px; }
-@media (max-width: 480px) { #music-now-playing.player-open { bottom: 72px; } }

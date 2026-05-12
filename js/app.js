@@ -128,36 +128,6 @@ export function formatPrice(lkrPrice) {
 /* ────────────────────────────────────────────────────────────────
    BACKGROUND MUSIC
 ──────────────────────────────────────────────────────────────── */
-/* ── Inject music player CSS (avoids style.css cascade issues) ── */
-(function() {
-  if (document.getElementById('mp-css')) return;
-  var s = document.createElement('style');
-  s.id = 'mp-css';
-  s.textContent = [
-    '#music-player{position:fixed;bottom:0;left:0;right:0;height:68px;background:rgba(6,2,0,.96);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid rgba(200,144,10,.22);display:flex!important;flex-direction:row!important;align-items:center;gap:16px;padding:0 24px;transform:translateY(100%);transition:transform .45s cubic-bezier(.34,1.1,.64,1);z-index:7500;box-sizing:border-box}',
-    '#music-player.visible{transform:translateY(0)!important}',
-    '.mp-disc{width:44px;height:44px;min-width:44px;border-radius:50%;background:radial-gradient(circle at 38% 38%,#5c2800,#1a0900);border:2px solid rgba(200,144,10,.3);position:relative;flex-shrink:0;animation:mpSpin 8s linear infinite;animation-play-state:paused;box-shadow:0 0 12px rgba(139,37,0,.3)}',
-    '.mp-disc.spinning{animation-play-state:running}',
-    '.mp-disc::before{content:"";position:absolute;inset:7px;border-radius:50%;border:1px solid rgba(200,144,10,.15)}',
-    '.mp-disc::after{content:"";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:9px;height:9px;border-radius:50%;background:#C8900A;box-shadow:0 0 6px rgba(200,144,10,.6)}',
-    '@keyframes mpSpin{to{transform:rotate(360deg)}}',
-    '.mp-meta{flex-shrink:0}',
-    '.mp-title{font-family:"Cinzel",serif;font-size:.82rem;letter-spacing:.05em;color:#fdf3e3;white-space:nowrap}',
-    '.mp-artist{font-family:"Cinzel",serif;font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(200,144,10,.6);margin-top:2px}',
-    '.mp-playbtn{width:38px;height:38px;min-width:38px;border-radius:50%;background:linear-gradient(135deg,#8B2500,#6B1A00);border:none;cursor:pointer;color:white;font-size:.85rem;display:flex;align-items:center;justify-content:center;transition:.2s;touch-action:manipulation;box-shadow:0 4px 12px rgba(139,37,0,.45);flex-shrink:0}',
-    '.mp-playbtn:hover{transform:scale(1.08)}',
-    '.mp-progress{flex:1;display:flex!important;flex-direction:row!important;align-items:center;gap:10px;min-width:0}',
-    '.mp-time{font-family:"Cinzel",serif;font-size:.56rem;color:rgba(253,243,227,.35);flex-shrink:0;width:28px}',
-    '.mp-bar{flex:1;height:3px;background:rgba(255,255,255,.1);border-radius:99px;cursor:pointer;position:relative;transition:height .15s;min-width:40px}',
-    '.mp-bar:hover{height:5px}',
-    '.mp-bar-fill{height:100%;border-radius:99px;background:linear-gradient(to right,#C8900A,#F0B429);width:0%;pointer-events:none}',
-    '.mp-icon-btn{width:32px;height:32px;min-width:32px;border-radius:50%;background:none;border:1px solid rgba(200,144,10,.2);cursor:pointer;color:rgba(253,243,227,.45);font-size:.72rem;display:flex;align-items:center;justify-content:center;transition:.2s;touch-action:manipulation;flex-shrink:0}',
-    '.mp-icon-btn:hover{border-color:rgba(200,144,10,.5);color:#C8900A}',
-    '@media(prefers-reduced-motion:reduce){.mp-disc{animation:none!important}}',
-    '@media(max-width:600px){#music-player{padding:0 14px;gap:10px;height:62px}.mp-meta,.mp-time{display:none}}',
-  ].join('');
-  document.head.appendChild(s);
-}());
 
 const soundBtn        = document.getElementById('sound-toggle');
 const bgMusic         = document.getElementById('bg-music');
