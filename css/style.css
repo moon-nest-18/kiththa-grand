@@ -157,6 +157,34 @@ body:has(button:hover) .custom-cursor { width: 28px; height: 28px; background: v
   pointer-events: none;
 }
 
+/* ── Page transition blur loader ── */
+#kg-page-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 800;
+  background: rgba(253, 243, 227, 0.45);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease;
+}
+#kg-page-loader.kg-visible {
+  opacity: 1;
+  pointer-events: all;
+}
+.kg-loader-ring {
+  width: 42px;
+  height: 42px;
+  border: 3px solid rgba(139, 37, 0, 0.12);
+  border-top-color: var(--red);
+  border-radius: 50%;
+  animation: spinRing 0.72s linear infinite;
+}
+
 /* ── Navbar ── */
 .navbar {
   position: fixed; top: 0; left: 0; right: 0;

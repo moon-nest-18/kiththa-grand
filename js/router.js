@@ -72,20 +72,26 @@ export const router = {
   async _render(page, params) {
     params = params || {};
 
+    /* ── Blur loader: show immediately so no white flash ── */
+    var loader = document.getElementById('kg-page-loader');
+    if (loader) {
+      loader.classList.add('kg-visible');
+    }
+
     /* Navbar visibility */
     var navbar = document.getElementById('navbar');
     if (navbar) {
       navbar.style.display = (page === 'login' || page === 'admin') ? 'none' : '';
     }
 
-    /* Fade out current page */
+    /* Fade out current page (runs while blur is already covering) */
     var current = document.querySelector('.page.active');
     if (current) {
       current.style.opacity    = '0';
       current.style.transform  = 'translateY(8px)';
-      current.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
+      current.style.transition = 'opacity 0.18s ease, transform 0.18s ease';
     }
-    await new Promise(function(r) { setTimeout(r, current ? 180 : 0); });
+    await new Promise(function(r) { setTimeout(r, current ? 160 : 0); });
 
     document.querySelectorAll('.page').forEach(function(p) {
       p.classList.remove('active');
@@ -96,9 +102,12 @@ export const router = {
 
     /* Show target page */
     var target = document.getElementById('page-' + page);
-    if (!target) return;
+    if (!target) {
+      if (loader) loader.classList.remove('kg-visible');
+      return;
+    }
 
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: 'instant' });
     target.classList.add('active');
 
     /* Load and run page module */
@@ -127,6 +136,9 @@ export const router = {
         });
       }
     }
+
+    /* ── Hide blur loader — content is ready ── */
+    if (loader) loader.classList.remove('kg-visible');
 
     /* Page title */
     var titles = {
