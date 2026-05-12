@@ -77,7 +77,9 @@ document.addEventListener('click', function(e) {
   const page = el.dataset.page;
   if (hamburger) hamburger.classList.remove('open');
   if (mobileMenu) mobileMenu.classList.remove('open');
-  router.go(page);
+  var navParams = {};
+  if (el.dataset.cat) navParams.cat = el.dataset.cat;
+  router.go(page, navParams);
   document.querySelectorAll('.nav-link').forEach(function(l) {
     l.classList.toggle('active', l.dataset.page === page);
   });
