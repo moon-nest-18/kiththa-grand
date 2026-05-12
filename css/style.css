@@ -172,9 +172,8 @@ body:has(button:hover) .custom-cursor { width: 28px; height: 28px; background: v
   padding: 12px 0;
 }
 .nav-inner {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 0 32px;
+  width: 100%;
+  padding: 0 40px;
   display: flex;
   align-items: center;
   gap: 32px;
@@ -187,7 +186,7 @@ body:has(button:hover) .custom-cursor { width: 28px; height: 28px; background: v
   transition: color var(--transition);
   flex-shrink: 0;
   .nav-logo-img {
-  height: 70px;
+  height: 55px;
   width: auto;
   object-fit: contain;
   mix-blend-mode: multiply;   /* ← black background hide කරනවා */
