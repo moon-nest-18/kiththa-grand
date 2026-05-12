@@ -31,9 +31,9 @@ const PRODUCT_CSS = [
   '.pd-main-wrap{position:relative;border-radius:22px;overflow:hidden;background:var(--cream-dark);',
     'aspect-ratio:1/1;box-shadow:var(--shadow-md)}',
 
-  /* Sliding track */
-  '.pd-track{display:flex;position:absolute;inset:0;transition:transform .45s cubic-bezier(.4,0,.2,1);will-change:transform}',
-  '.pd-slide{min-width:100%;width:100%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:5rem;background:var(--cream-dark);overflow:hidden}',
+  /* Sliding track — no absolute positioning, slides sized by JS */
+  '.pd-track{display:flex;height:100%;transition:transform .45s cubic-bezier(.4,0,.2,1);will-change:transform}',
+  '.pd-slide{flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:5rem;background:var(--cream-dark);overflow:hidden}',
   '.pd-slide img{width:100%;height:100%;object-fit:cover;display:block}',
 
   /* Arrow buttons */
@@ -192,14 +192,30 @@ const PRODUCT_CSS = [
 var slideCount = 1;
 var slideIndex = 0;
 
+/* ── Set every slide to the exact pixel size of the wrap ── */
+function initSlides(container) {
+  var wrap = container.querySelector('.pd-main-wrap');
+  if (!wrap) return;
+  var w = wrap.offsetWidth;
+  var h = wrap.offsetHeight;
+  if (!w) return;
+  container.querySelectorAll('.pd-slide').forEach(function(s) {
+    s.style.width    = w + 'px';
+    s.style.minWidth = w + 'px';
+    s.style.height   = h + 'px';
+  });
+  /* Re-position after resize */
+  var track = container.querySelector('#pd-track');
+  if (track) track.style.transform = 'translateX(-' + (slideIndex * w) + 'px)';
+}
+
 /* ── Move to slide n ── */
 function goToSlide(n, container) {
   slideIndex = ((n % slideCount) + slideCount) % slideCount;
-  var wrap  = container.querySelector('.pd-main-wrap');
   var track = container.querySelector('#pd-track');
-  if (track && wrap) {
-    /* Use px so % doesn't resolve against the track's own expanded width */
-    track.style.transform = 'translateX(-' + (slideIndex * wrap.offsetWidth) + 'px)';
+  var slide = container.querySelector('.pd-slide');
+  if (track && slide && slide.offsetWidth) {
+    track.style.transform = 'translateX(-' + (slideIndex * slide.offsetWidth) + 'px)';
   }
   container.querySelectorAll('.pd-dot').forEach(function(d, i) {
     d.classList.toggle('active', i === slideIndex);
@@ -644,6 +660,16 @@ export async function init(container, params) {
 
     /* Render */
     container.innerHTML = buildPage(product, reviews, related);
+
+    /* Size slides with explicit px (must run after DOM insertion) */
+    initSlides(container);
+
+    /* Re-size on window resize */
+    var resizeTimer;
+    window.addEventListener('resize', function() {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(function() { initSlides(container); }, 120);
+    });
 
     /* Wire */
     wireEvents(container, product);
