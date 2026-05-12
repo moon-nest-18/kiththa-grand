@@ -151,10 +151,10 @@ function tryPlayMusic() {
   }).catch(function() {});
 }
 
-/* Start on first interaction anywhere on the page */
+/* Start on first interaction — keep listener until music actually starts */
 document.addEventListener('click', function() {
-  tryPlayMusic();
-}, { once: true });
+  if (!musicStarted && state.sound) tryPlayMusic();
+});
 
 /* Sound toggle button */
 if (soundBtn) {
