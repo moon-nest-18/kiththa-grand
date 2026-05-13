@@ -3,7 +3,7 @@
    sw.js  |  Cache-first for assets, network-first for API
 ================================================================ */
 
-var CACHE_NAME = 'kg-v1';
+var CACHE_NAME = 'kg-v3';
 
 var PRECACHE = [
   '/',
@@ -54,6 +54,8 @@ self.addEventListener('fetch', function(e) {
   if (!req.url.startsWith('http')) return;
   if (req.url.includes('supabase.co')) return;
   if (req.url.includes('cdn.jsdelivr.net')) return;
+  if (req.url.includes('suno.ai')) return;
+  if (req.url.match(/\.(mp3|mp4|ogg|wav)(\?|$)/)) return;
 
   /* HTML navigation — network first, cache fallback */
   if (req.mode === 'navigate') {
