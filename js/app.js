@@ -60,23 +60,38 @@ window.addEventListener('scroll', function() {
   if (navbar) navbar.classList.toggle('scrolled', window.scrollY > 60);
 }, { passive: true });
 
+var mobileOverlay = document.getElementById('mobile-overlay');
+
+function closeMobileMenu() {
+  if (hamburger) hamburger.classList.remove('open');
+  if (mobileMenu) mobileMenu.classList.remove('open');
+  if (mobileOverlay) mobileOverlay.classList.remove('open');
+  document.body.classList.remove('menu-open');
+}
+
 if (hamburger) {
   hamburger.addEventListener('click', function() {
-    hamburger.classList.toggle('open');
-    if (mobileMenu) mobileMenu.classList.toggle('open');
+    var isOpen = hamburger.classList.toggle('open');
+    if (mobileMenu) mobileMenu.classList.toggle('open', isOpen);
+    if (mobileOverlay) mobileOverlay.classList.toggle('open', isOpen);
+    document.body.classList.toggle('menu-open', isOpen);
   });
+}
+
+if (mobileOverlay) {
+  mobileOverlay.addEventListener('click', closeMobileMenu);
 }
 
 /* ────────────────────────────────────────────────────────────────
    ROUTING
 ──────────────────────────────────────────────────────────────── */
 document.addEventListener('click', function(e) {
+  if (e.target.closest('#mob-close-btn')) { closeMobileMenu(); return; }
   const el = e.target.closest('[data-page]');
   if (!el) return;
   e.preventDefault();
+  closeMobileMenu();
   const page = el.dataset.page;
-  if (hamburger) hamburger.classList.remove('open');
-  if (mobileMenu) mobileMenu.classList.remove('open');
   var navParams = {};
   if (el.dataset.cat) navParams.cat = el.dataset.cat;
   router.go(page, navParams);

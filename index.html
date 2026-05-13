@@ -133,31 +133,58 @@
       </button>
     </div>
 
-    <!-- Mobile Menu -->
+    <!-- Mobile Drawer -->
     <div id="mobile-menu" class="mobile-menu">
-      <ul>
-        <li><a href="#" data-page="home"><i class="fas fa-home"></i> Home</a></li>
-        <li><a href="#" data-page="products"><i class="fas fa-pepper-hot"></i> Products</a></li>
-        <li><a href="#" data-page="bulk-orders"><i class="fas fa-industry"></i> Bulk Orders</a></li>
-        <li><a href="#" data-page="about"><i class="fas fa-leaf"></i> Our Story</a></li>
-        <li><a href="#" data-page="contact"><i class="fas fa-envelope"></i> Contact</a></li>
-      </ul>
-      <div class="mobile-menu-actions">
-        <a href="#" data-page="wishlist" class="mob-action-btn"><i class="far fa-heart"></i> Wishlist</a>
-        <a href="#" data-page="cart"     class="mob-action-btn"><i class="fas fa-shopping-basket"></i> Cart</a>
-        <a href="#" data-page="login"    class="mob-action-btn" id="mob-auth-btn"><i class="fas fa-user"></i> Sign In</a>
+      <div class="mob-drawer-header">
+        <a href="#" data-page="home" class="mob-drawer-brand">
+          <img src="images/kiththa LOGO (4).png" alt="Kiththa Grand" class="mob-drawer-logo" />
+          <div>
+            <p class="mob-brand-name">Kiththa Grand</p>
+            <p class="mob-brand-tagline">Pure Ceylon Spices</p>
+          </div>
+        </a>
+        <button id="mob-close-btn" class="mob-close-btn" aria-label="Close menu">
+          <i class="fas fa-times"></i>
+        </button>
       </div>
-      <div class="mobile-menu-currency">
-        <span><i class="fas fa-coins"></i> Currency</span>
-        <select id="mobile-currency-select" class="mob-currency-sel">
-          <option value="LKR">🇱🇰 LKR</option>
-          <option value="USD">🇺🇸 USD</option>
-          <option value="EUR">🇪🇺 EUR</option>
-          <option value="GBP">🇬🇧 GBP</option>
-        </select>
+      <nav class="mob-nav">
+        <ul>
+          <li><a href="#" data-page="home"><i class="fas fa-home"></i><span>Home</span></a></li>
+          <li><a href="#" data-page="products"><i class="fas fa-pepper-hot"></i><span>Products</span></a></li>
+          <li><a href="#" data-page="bulk-orders"><i class="fas fa-industry"></i><span>Bulk Orders</span></a></li>
+          <li><a href="#" data-page="about"><i class="fas fa-leaf"></i><span>Our Story</span></a></li>
+          <li><a href="#" data-page="contact"><i class="fas fa-envelope"></i><span>Contact</span></a></li>
+        </ul>
+      </nav>
+      <div class="mob-quick-actions">
+        <a href="#" data-page="wishlist" class="mob-action-btn">
+          <i class="far fa-heart"></i><span>Wishlist</span>
+        </a>
+        <a href="#" data-page="cart" class="mob-action-btn">
+          <i class="fas fa-shopping-basket"></i><span>Cart</span>
+        </a>
+      </div>
+      <div class="mob-drawer-footer">
+        <div class="mob-currency-row">
+          <i class="fas fa-coins"></i>
+          <span>Currency</span>
+          <select id="mobile-currency-select" class="mob-currency-sel">
+            <option value="LKR">🇱🇰 LKR</option>
+            <option value="USD">🇺🇸 USD</option>
+            <option value="EUR">🇪🇺 EUR</option>
+            <option value="GBP">🇬🇧 GBP</option>
+          </select>
+        </div>
+        <a href="#" data-page="login" class="mob-auth-full" id="mob-auth-btn">
+          <i class="fas fa-user"></i>
+          <span>Sign In / Register</span>
+        </a>
       </div>
     </div>
   </nav>
+
+  <!-- Mobile Overlay -->
+  <div id="mobile-overlay" class="mobile-overlay"></div>
 
   <!-- ============================================================
        MAIN PAGE CONTAINER (Router injects pages here)
