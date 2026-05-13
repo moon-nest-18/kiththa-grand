@@ -437,16 +437,38 @@ const CSS = `
   .profile-stats,.profile-quick{grid-column:1/-1}
 }
 @media(max-width:640px){
-  .profile-hero-inner{grid-template-columns:1fr;text-align:center}
+  .profile-hero{padding:88px 0 72px}
+  .profile-body{margin-top:-40px}
+  .profile-hero-inner{grid-template-columns:1fr;text-align:center;gap:16px}
   .profile-avatar-wrap{margin:0 auto}
-  .profile-meta{justify-content:center}
-  .profile-stats{justify-content:center}
-  .profile-quick{justify-content:center}
+  .profile-avatar{width:88px;height:88px}
+  .avatar-initials{font-size:1.6rem}
+  .profile-meta{justify-content:center;gap:12px}
+  .profile-stats{justify-content:center;gap:12px;flex-wrap:wrap}
+  .p-stat-div{display:none}
+  .profile-quick{justify-content:center;gap:6px}
+  .quick-btn{padding:10px 12px;min-width:52px;font-size:.58rem}
   .profile-greeting{text-align:center}
-  .profile-name{text-align:center}
+  .profile-name{text-align:center;font-size:1.4rem}
   .profile-email{justify-content:center;text-align:center}
-  .detail-grid{grid-template-columns:1fr}
+  .detail-grid{grid-template-columns:1fr 1fr}
   .pform-row{grid-template-columns:1fr}
+  .profile-card{padding:20px;border-radius:16px}
+  .loyalty-card{padding:20px;border-radius:16px}
+  .loyalty-points{font-size:1.9rem}
+  .loyalty-actions{flex-direction:column;gap:8px}
+  .referral-inner{flex-direction:column;text-align:center;gap:16px}
+  .referral-emoji{display:none}
+  .referral-code-wrap{justify-content:center;flex-wrap:wrap}
+}
+@media(max-width:400px){
+  .profile-quick{gap:4px}
+  .quick-btn{padding:8px 10px;font-size:.55rem;min-width:46px}
+  .detail-grid{grid-template-columns:1fr}
+  .profile-card{padding:16px}
+  .loyalty-card{padding:16px}
+  .order-item{gap:10px}
+  .order-icon{font-size:1.1rem}
 }
 `;
 
