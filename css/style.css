@@ -1284,7 +1284,9 @@ body.menu-open { overflow: hidden; }
   .nav-actions .icon-btn:not(.cart-btn),
   .btn-auth { display: none; }
   .hamburger { display: flex; }
-  .nav-inner { padding: 0 14px; gap: 0; justify-content: space-between; align-items: center; }
+  .nav-inner { padding: 0 14px; gap: 0; justify-content: flex-start; align-items: center; }
+  .nav-actions { margin-left: auto; display: flex; align-items: center; gap: 4px; }
+  .cart-btn { width: 40px; height: 40px; padding: 0; border-radius: 50%; }
   .nav-logo-text { display: block; }
   .nav-logo-main {
     display: block;
@@ -1295,7 +1297,6 @@ body.menu-open { overflow: hidden; }
   }
   .nav-logo { gap: 8px; }
   .nav-logo-img { height: 38px; }
-  .nav-actions { gap: 6px; }
   .section { padding: 60px 0; }
   .hero { padding: 96px 20px 52px; }
   .container { padding: 0 16px; }
@@ -1444,4 +1445,17 @@ button { touch-action: manipulation; }
   #music-now-playing { bottom: 16px; left: 14px; padding: 7px 10px 7px 12px; gap: 8px; }
   .mnp-text { font-size: 0.62rem; }
   .mnp-toggle { width: 24px; height: 24px; font-size: 0.55rem; }
+}
+
+/* ── Mobile Drawer Z-Index Fix ── */
+@media (max-width: 768px) {
+  .mobile-menu {
+    z-index: 1001;
+  }
+  .mobile-overlay {
+    z-index: 1000;
+  }
+  .navbar {
+    z-index: 999;
+  }
 }
