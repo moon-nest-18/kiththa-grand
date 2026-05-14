@@ -336,7 +336,9 @@ body:has(button:hover) .custom-cursor { width: 28px; height: 28px; background: v
 /* ── Mobile Drawer ── */
 .mobile-menu {
   position: fixed;
-  top: 0; right: 0; bottom: 0;
+  top: 0; right: 0;
+  height: 100vh;
+  height: 100dvh;
   width: 88%; max-width: 340px;
   background: var(--cream);
   z-index: 999;
@@ -345,6 +347,7 @@ body:has(button:hover) .custom-cursor { width: 28px; height: 28px; background: v
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+  overscroll-behavior: contain;
   box-shadow: -16px 0 60px rgba(61,28,2,0.3);
 }
 .mobile-menu.open { transform: translateX(0); }
@@ -454,7 +457,7 @@ body.menu-open { overflow: hidden; }
 .mob-action-btn:hover i { color: var(--red); }
 
 .mob-drawer-footer {
-  padding: 14px 14px 28px;
+  padding: 14px 14px calc(28px + env(safe-area-inset-bottom, 0px));
   border-top: 1px solid var(--cream-dark);
   display: flex;
   flex-direction: column;
