@@ -6,6 +6,28 @@
 import { supabase } from './supabase.js';
 import { router }   from './router.js';
 
+/* ── Country → currency map ── */
+var COUNTRY_CURRENCY = {
+  LK:'LKR',
+  GB:'GBP',GG:'GBP',JE:'GBP',IM:'GBP',
+  DE:'EUR',FR:'EUR',IT:'EUR',ES:'EUR',PT:'EUR',NL:'EUR',
+  BE:'EUR',AT:'EUR',FI:'EUR',IE:'EUR',GR:'EUR',LU:'EUR',
+  MT:'EUR',CY:'EUR',SK:'EUR',SI:'EUR',EE:'EUR',LV:'EUR',
+  LT:'EUR',HR:'EUR',CH:'EUR',NO:'EUR',SE:'EUR',DK:'EUR',
+  US:'USD',CA:'USD',AU:'USD',NZ:'USD',
+  SG:'USD',HK:'USD',JP:'USD',KR:'USD',TW:'USD',
+  CN:'USD',TH:'USD',VN:'USD',ID:'USD',PH:'USD',MY:'USD',
+  BN:'USD',MM:'USD',KH:'USD',LA:'USD',TL:'USD',
+  AE:'USD',SA:'USD',QA:'USD',KW:'USD',BH:'USD',OM:'USD',
+  JO:'USD',IL:'USD',
+  IN:'USD',PK:'USD',BD:'USD',NP:'USD',MV:'USD',BT:'USD',
+  ZA:'USD',NG:'USD',KE:'USD',GH:'USD',ET:'USD',TZ:'USD',
+  UG:'USD',RW:'USD',MU:'USD',
+  MX:'USD',BR:'USD',AR:'USD',CL:'USD',CO:'USD',PE:'USD',
+  VE:'USD',EC:'USD',UY:'USD',PY:'USD',BO:'USD',
+  JM:'USD',TT:'USD',BB:'USD',BS:'USD',TC:'USD',
+};
+
 /* ────────────────────────────────────────────────────────────────
    STATE
 ──────────────────────────────────────────────────────────────── */
@@ -130,14 +152,24 @@ function onCurrencyChange(val) {
   if (mobileCurrencySel) mobileCurrencySel.value = val;
   document.dispatchEvent(new CustomEvent('currencyChange', { detail: val }));
 }
-if (currencySelect) currencySelect.addEventListener('change', function(e) { onCurrencyChange(e.target.value); });
-if (mobileCurrencySel) mobileCurrencySel.addEventListener('change', function(e) { onCurrencyChange(e.target.value); });
+if (currencySelect) currencySelect.addEventListener('change', function(e) {
+  localStorage.setItem('kg_currency_manual', '1');
+  onCurrencyChange(e.target.value);
+  showToast('Currency set to ' + e.target.value, 'info');
+});
+if (mobileCurrencySel) mobileCurrencySel.addEventListener('change', function(e) {
+  localStorage.setItem('kg_currency_manual', '1');
+  onCurrencyChange(e.target.value);
+  showToast('Currency set to ' + e.target.value, 'info');
+});
 
 export function formatPrice(lkrPrice) {
-  const rate    = state.rates[state.currency] || 1;
-  const converted = (parseFloat(lkrPrice) * rate).toFixed(2);
-  const symbols = { LKR: 'Rs.', USD: '$', EUR: 'EUR ', GBP: 'GBP ' };
-  return (symbols[state.currency] || 'Rs.') + parseFloat(converted).toLocaleString();
+  var rate     = state.rates[state.currency] || 1;
+  var converted = parseFloat(lkrPrice) * rate;
+  var symbols  = { LKR: 'Rs.', USD: '$', EUR: 'EUR ', GBP: 'GBP ' };
+  var sym      = symbols[state.currency] || 'Rs.';
+  if (state.currency === 'LKR') return sym + Math.round(converted).toLocaleString();
+  return sym + converted.toFixed(2);
 }
 
 /* ────────────────────────────────────────────────────────────────
@@ -584,9 +616,55 @@ const appObserver = new MutationObserver(function() {
 appObserver.observe(document.getElementById('app'), {
   childList: false, attributes: true, subtree: true
 });
+/* ────────────────────────────────────────────────────────────────
+   LIVE EXCHANGE RATES
+──────────────────────────────────────────────────────────────── */
+async function fetchLiveRates() {
+  try {
+    var res  = await fetch('https://api.frankfurter.app/latest?from=LKR&to=USD,EUR,GBP');
+    var data = await res.json();
+    if (data && data.rates) {
+      state.rates = {
+        LKR: 1,
+        USD: data.rates.USD,
+        EUR: data.rates.EUR,
+        GBP: data.rates.GBP,
+      };
+      document.dispatchEvent(new CustomEvent('currencyChange', { detail: state.currency }));
+    }
+  } catch (err) {
+    /* keep fallback rates already in state */
+  }
+}
+
+/* ────────────────────────────────────────────────────────────────
+   AUTO CURRENCY DETECTION
+──────────────────────────────────────────────────────────────── */
+async function detectCurrency() {
+  if (localStorage.getItem('kg_currency_manual')) return;
+  try {
+    var res  = await fetch('https://ipapi.co/json/');
+    var data = await res.json();
+    if (!data || !data.country_code) return;
+    var detected = COUNTRY_CURRENCY[data.country_code] || 'USD';
+    if (detected === state.currency) return; /* already correct, no re-render needed */
+    state.currency = detected;
+    localStorage.setItem('kg_currency', detected);
+    var sel  = document.getElementById('currency-select');
+    var msel = document.getElementById('mobile-currency-select');
+    if (sel)  sel.value  = detected;
+    if (msel) msel.value = detected;
+    document.dispatchEvent(new CustomEvent('currencyChange', { detail: detected }));
+  } catch (err) {
+    /* stay on saved or default */
+  }
+}
+
 // Initial load
 
-loadCategories();   // ← add
+fetchLiveRates();
+detectCurrency();
+loadCategories();
 loadFeaturedProducts();
 
 /* Global exports */
