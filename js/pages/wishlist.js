@@ -13,10 +13,17 @@ function injectStyles() {
   var s = document.createElement('style');
   s.id = 'wl-styles';
   s.textContent = [
-    '.wl-page{max-width:1200px;margin:0 auto;padding:100px 20px 60px}',
-    '.wl-header{margin-bottom:32px}',
-    '.wl-title{font-family:var(--font-head);font-size:clamp(1.6rem,3vw,2.4rem);color:var(--brown)}',
-    '.wl-subtitle{font-family:var(--font-body);color:var(--brown-light);margin-top:6px;font-style:italic}',
+    /* hero */
+    '.wl-hero{background:#0a0502;padding:120px 0 72px;position:relative;overflow:hidden}',
+    '.wl-hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 40% 50%,rgba(139,37,0,.85) 0%,rgba(61,28,2,.95) 60%,#0a0502 100%)}',
+    '.wl-hero-ov{position:absolute;inset:0;background-image:repeating-linear-gradient(45deg,transparent,transparent 40px,rgba(200,144,10,.03) 40px,rgba(200,144,10,.03) 80px)}',
+    '.wl-hero .container{position:relative;z-index:1}',
+    '.wl-eyebrow{font-family:var(--font-sub);font-size:.65rem;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin-bottom:12px}',
+    '.wl-hero-title{font-family:var(--font-head);font-size:clamp(2rem,5vw,3.2rem);color:var(--cream);line-height:1.2;margin-bottom:10px}',
+    '.wl-hero-sub{font-size:.9rem;color:rgba(253,243,227,.5);font-style:italic}',
+    '.wl-hero-count{display:inline-flex;align-items:center;gap:8px;margin-top:16px;background:rgba(200,144,10,.15);border:1px solid rgba(200,144,10,.3);border-radius:99px;padding:6px 16px;font-family:var(--font-sub);font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-light)}',
+    /* page body */
+    '.wl-page{max-width:1200px;margin:0 auto;padding:48px 20px 60px}',
     '.wl-layout{display:grid;grid-template-columns:1fr 340px;gap:32px;align-items:start}',
     /* section label */
     '.wl-label{font-family:var(--font-sub);font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:16px}',
@@ -97,7 +104,8 @@ function injectStyles() {
       '.wl-grid{grid-template-columns:repeat(2,1fr)}',
     '}',
     '@media(max-width:520px){',
-      '.wl-page{padding:88px 16px 40px}',
+      '.wl-page{padding:32px 16px 40px}',
+      '.wl-hero{padding:100px 0 52px}',
       '.wl-grid{grid-template-columns:1fr;gap:12px}',
       '.wcard{display:flex;flex-direction:row;align-items:stretch}',
       '.wc-img-wrap{width:110px;min-width:110px;aspect-ratio:auto;border-radius:0;min-height:110px}',
@@ -434,19 +442,29 @@ export async function init(container) {
   if (!state.user) { router.go('login'); return; }
 
   // Skeleton
-  container.innerHTML = '<div class="wl-page">'
-    + '<div class="wl-header"><h1 class="wl-title">My Wishlist</h1></div>'
-    + '<div class="wl-layout">'
-    +   '<div>'
-    +     '<div class="wl-label">Saved Spices</div>'
-    +     '<div class="wl-grid" id="wl-grid">'
-    +       skelCard() + skelCard() + skelCard()
-    +       + skelCard() + skelCard() + skelCard()
-    +     '</div>'
+  container.innerHTML = '<div>'
+    + '<section class="wl-hero">'
+    +   '<div class="wl-hero-bg"></div>'
+    +   '<div class="wl-hero-ov"></div>'
+    +   '<div class="container">'
+    +     '<p class="wl-eyebrow">My Collection</p>'
+    +     '<h1 class="wl-hero-title">My Wishlist</h1>'
+    +     '<p class="wl-hero-sub">Your hand-picked Ceylon favourites</p>'
     +   '</div>'
-    +   '<div id="wl-panel">'
-    +     '<div class="wl-skel" style="height:90px;border-radius:14px;margin-bottom:16px"></div>'
-    +     '<div class="wl-skel" style="height:240px;border-radius:14px"></div>'
+    + '</section>'
+    + '<div class="wl-page">'
+    +   '<div class="wl-layout">'
+    +     '<div>'
+    +       '<div class="wl-label">Saved Spices</div>'
+    +       '<div class="wl-grid" id="wl-grid">'
+    +         skelCard() + skelCard() + skelCard()
+    +         + skelCard() + skelCard() + skelCard()
+    +       '</div>'
+    +     '</div>'
+    +     '<div id="wl-panel">'
+    +       '<div class="wl-skel" style="height:90px;border-radius:14px;margin-bottom:16px"></div>'
+    +       '<div class="wl-skel" style="height:240px;border-radius:14px"></div>'
+    +     '</div>'
     +   '</div>'
     + '</div>'
     + '</div>';
@@ -473,12 +491,14 @@ export async function init(container) {
     return;
   }
 
-  // Update header with count
-  var header = container.querySelector('.wl-header');
-  if (header) header.innerHTML = '<h1 class="wl-title reveal">My Wishlist</h1>'
-    + '<p class="wl-subtitle reveal">'
+  // Update hero with item count badge
+  var heroInner = container.querySelector('.wl-hero .container');
+  if (heroInner) heroInner.innerHTML = '<p class="wl-eyebrow">My Collection</p>'
+    + '<h1 class="wl-hero-title reveal">My Wishlist</h1>'
+    + '<p class="wl-hero-sub reveal">Your hand-picked Ceylon favourites</p>'
+    + '<div class="wl-hero-count"><i class="fas fa-heart"></i>'
     + items.length + ' ' + (items.length === 1 ? 'spice' : 'spices') + ' saved'
-    + '</p>';
+    + '</div>';
 
   // Render cards
   if (grid) {
