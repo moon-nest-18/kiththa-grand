@@ -5,6 +5,21 @@
 
 import { router }      from '../router.js';
 import { initReveals } from '../app.js';
+import { supabase }    from '../supabase.js';
+
+var DEFAULT_STORY = {
+  heroTitle: 'From the Spice Gardens of Ceylon',
+  heroSub: 'For generations, the highlands of Sri Lanka have gifted the world with the finest spices. Kiththa Grand was born from a deep love for this heritage &mdash; to carry the purity of Ceylon spices to every kitchen on earth.',
+  originTitle: 'Where Every Spice Tells a Story',
+  originParagraphs: [
+    'Sri Lanka &mdash; once called <strong>Serendib</strong> by Arab traders and <strong>Taprobane</strong> by the Greeks &mdash; has been at the heart of the global spice trade for over 2,000 years. The volcanic soils, monsoon rains and perfect elevation of the island create flavour profiles found nowhere else on earth.',
+    'Kiththa Grand was founded with a single purpose: to connect the <strong>small-scale spice farmers of the hill country</strong> directly to homes and kitchens around the world &mdash; without dilution, without compromise, without middlemen.',
+    'Every batch is sourced directly from trusted growers in Kandy, Matale and the Southern Province. Each spice is sun-dried, hand-sorted and packed using traditional methods that have not changed in centuries.',
+  ],
+  quote: 'The spice trade built empires. We bring that same precious cargo &mdash; directly from the island of serendipity &mdash; to your table.',
+  quoteAttr: 'Kiththa Grand',
+  images: [],
+};
 
 /* ── CSS ── */
 const CSS = [
@@ -77,6 +92,14 @@ const CSS = [
   '.about-btn-sec{display:inline-flex;align-items:center;gap:10px;padding:14px 32px;border:1.5px solid rgba(139,37,0,.3);color:var(--red);border-radius:99px;font-family:var(--font-sub);font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;background:transparent;transition:.25s}',
   '.about-btn-sec:hover{border-color:var(--red);background:rgba(139,37,0,.05)}',
 
+  /* gallery */
+  '.about-gallery-sec{padding:0 0 80px;background:white}',
+  '.about-gallery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}',
+  '.about-gallery-item{border-radius:18px;overflow:hidden;aspect-ratio:4/3}',
+  '.about-gallery-item img{width:100%;height:100%;object-fit:cover;display:block}',
+  '@media(max-width:768px){.about-gallery-grid{grid-template-columns:1fr 1fr}}',
+  '@media(max-width:480px){.about-gallery-grid{grid-template-columns:1fr}}',
+
   /* responsive */
   '@media(max-width:900px){.about-vals-grid{grid-template-columns:1fr 1fr}}',
   '@media(max-width:768px){',
@@ -88,18 +111,15 @@ const CSS = [
 ].join('');
 
 /* ── Render ── */
-function renderHero() {
+function renderHero(story) {
   return (
     '<section class="about-hero">'
       + '<div class="about-hero-bg"></div>'
       + '<div class="about-hero-overlay"></div>'
       + '<div class="container">'
         + '<p class="about-eyebrow reveal">Our Story</p>'
-        + '<h1 class="reveal" style="--delay:.08s">From the Spice Gardens of Ceylon</h1>'
-        + '<p class="about-hero-sub reveal" style="--delay:.14s">'
-          + 'For generations, the highlands of Sri Lanka have gifted the world with the finest spices. '
-          + 'Kiththa Grand was born from a deep love for this heritage &mdash; to carry the purity of Ceylon spices to every kitchen on earth.'
-        + '</p>'
+        + '<h1 class="reveal" style="--delay:.08s">' + story.heroTitle + '</h1>'
+        + '<p class="about-hero-sub reveal" style="--delay:.14s">' + story.heroSub + '</p>'
         + '<div class="about-hero-rule reveal" style="--delay:.2s">'
           + '<span style="width:40px;background:var(--gold)"></span>'
           + '<span style="width:20px;background:rgba(200,144,10,.4)"></span>'
@@ -110,35 +130,52 @@ function renderHero() {
   );
 }
 
-function renderOrigin() {
+function renderOrigin(story) {
+  var images = story.images || [];
+  var visualHTML = images.length
+    ? '<img src="' + images[0] + '" alt="' + story.originTitle.replace(/"/g,'&quot;') + '" style="width:100%;height:100%;object-fit:cover" />'
+    : (
+        '<div class="about-vis-bg"></div>'
+        + '<div class="about-vis-lines"></div>'
+        + '<div class="about-vis-inner">'
+          + '<span class="about-vis-emoji">&#127798;</span>'
+          + '<p class="about-vis-quote">&ldquo;' + story.quote + '&rdquo;</p>'
+          + '<p class="about-vis-attr">&mdash; ' + story.quoteAttr + '</p>'
+          + '<div class="about-vis-tags">'
+            + '<span class="about-vis-tag">Ceylon Cinnamon</span>'
+            + '<span class="about-vis-tag">Black Pepper</span>'
+            + '<span class="about-vis-tag">Cardamom</span>'
+            + '<span class="about-vis-tag">Cloves</span>'
+          + '</div>'
+        + '</div>'
+      );
+  var paragraphsHTML = (story.originParagraphs || []).filter(function(p) { return p; })
+    .map(function(p) { return '<p>' + p + '</p>'; }).join('');
+
   return (
     '<section class="about-origin">'
       + '<div class="container">'
         + '<div class="about-origin-grid">'
           + '<div class="about-origin-text reveal">'
             + '<p class="about-origin-eyebrow">The Beginning</p>'
-            + '<h2>Where Every Spice Tells a Story</h2>'
-            + '<p>Sri Lanka &mdash; once called <strong>Serendib</strong> by Arab traders and <strong>Taprobane</strong> by the Greeks &mdash; has been at the heart of the global spice trade for over 2,000 years. The volcanic soils, monsoon rains and perfect elevation of the island create flavour profiles found nowhere else on earth.</p>'
-            + '<p>Kiththa Grand was founded with a single purpose: to connect the <strong>small-scale spice farmers of the hill country</strong> directly to homes and kitchens around the world &mdash; without dilution, without compromise, without middlemen.</p>'
-            + '<p>Every batch is sourced directly from trusted growers in Kandy, Matale and the Southern Province. Each spice is sun-dried, hand-sorted and packed using traditional methods that have not changed in centuries.</p>'
+            + '<h2>' + story.originTitle + '</h2>'
+            + paragraphsHTML
           + '</div>'
-          + '<div class="about-vis reveal" style="--delay:.1s">'
-            + '<div class="about-vis-bg"></div>'
-            + '<div class="about-vis-lines"></div>'
-            + '<div class="about-vis-inner">'
-              + '<span class="about-vis-emoji">&#127798;</span>'
-              + '<p class="about-vis-quote">&ldquo;The spice trade built empires. We bring that same precious cargo &mdash; directly from the island of serendipity &mdash; to your table.&rdquo;</p>'
-              + '<p class="about-vis-attr">&mdash; Kiththa Grand</p>'
-              + '<div class="about-vis-tags">'
-                + '<span class="about-vis-tag">Ceylon Cinnamon</span>'
-                + '<span class="about-vis-tag">Black Pepper</span>'
-                + '<span class="about-vis-tag">Cardamom</span>'
-                + '<span class="about-vis-tag">Cloves</span>'
-              + '</div>'
-            + '</div>'
-          + '</div>'
+          + '<div class="about-vis reveal" style="--delay:.1s">' + visualHTML + '</div>'
         + '</div>'
       + '</div>'
+    + '</section>'
+  );
+}
+
+function renderGallery(images) {
+  if (!images || images.length < 2) return '';
+  var items = images.slice(1).map(function(url, i) {
+    return '<div class="about-gallery-item reveal" style="--delay:' + (i * 0.06) + 's"><img src="' + url + '" alt="Kiththa Grand" loading="lazy" /></div>';
+  }).join('');
+  return (
+    '<section class="about-gallery-sec">'
+      + '<div class="container"><div class="about-gallery-grid">' + items + '</div></div>'
     + '</section>'
   );
 }
@@ -255,10 +292,17 @@ export async function init(container) {
     document.head.appendChild(s);
   }
 
+  var story = DEFAULT_STORY;
+  var row = await supabase.from('settings').select('value').eq('key', 'about_content').maybeSingle();
+  if (row.data && row.data.value) {
+    try { story = Object.assign({}, DEFAULT_STORY, JSON.parse(row.data.value)); } catch (e) {}
+  }
+
   container.innerHTML = (
     '<div class="about-page">'
-      + renderHero()
-      + renderOrigin()
+      + renderHero(story)
+      + renderOrigin(story)
+      + renderGallery(story.images)
       + renderValues()
       + renderStats()
       + renderTimeline()

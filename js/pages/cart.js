@@ -84,7 +84,7 @@ function injectStyles() {
     '.cc-body{padding:0 16px 16px;display:none}',
     '.cc-body.open{display:block}',
     '.cc-row{display:flex;gap:8px}',
-    '.cc-input{flex:1;padding:10px 14px;border:1.5px solid var(--cream-dark);border-radius:10px;font-family:var(--font-sub);font-size:.75rem;color:var(--brown);background:var(--cream);outline:none;letter-spacing:.08em;text-transform:uppercase;transition:border-color .2s}',
+    '.cc-input{flex:1;padding:10px 14px;border:1.5px solid var(--cream-dark);border-radius:10px;font-family:var(--font-sub);font-size:1rem;color:var(--brown);background:var(--cream);outline:none;letter-spacing:.08em;text-transform:uppercase;transition:border-color .2s}',
     '.cc-input:focus{border-color:var(--gold)}',
     '.cc-btn{padding:10px 18px;background:var(--red);color:white;border:none;border-radius:10px;font-family:var(--font-sub);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:.2s;white-space:nowrap;flex-shrink:0}',
     '.cc-btn:hover{background:var(--red-dark)}',
@@ -147,6 +147,8 @@ function injectStyles() {
       '.ci{padding:12px;gap:10px}',
       '.ci-img{width:58px;min-width:58px;height:58px}',
       '.ci-si{display:none}',
+      '.ci-qbtn{width:36px;height:36px;font-size:.8rem}',
+      '.ci-qval{min-width:32px}',
     '}',
   ].join('');
   document.head.appendChild(s);
@@ -394,7 +396,11 @@ async function removeItem(rowId) {
     el.remove();
   }
 
-  await supabase.from('cart').delete().eq('id', rowId);
+  var delRes = await supabase.from('cart').delete().eq('id', rowId);
+  if (delRes.error) {
+    showToast('Could not remove item. Please refresh and try again.', 'error');
+    return;
+  }
   cartData = cartData.filter(function(x) { return String(x.id) !== String(rowId); });
   await loadCart();
   updateSummary();
@@ -418,9 +424,15 @@ async function changeQty(rowId, newQty) {
   }
   if (!item) return;
 
+  var prevQty = item.quantity;
   item.quantity = newQty;
 
-  await supabase.from('cart').update({ quantity: newQty }).eq('id', rowId);
+  var updRes = await supabase.from('cart').update({ quantity: newQty }).eq('id', rowId);
+  if (updRes.error) {
+    item.quantity = prevQty;
+    showToast('Could not update quantity. Please try again.', 'error');
+    return;
+  }
   await loadCart();
 
   /* update qty display */

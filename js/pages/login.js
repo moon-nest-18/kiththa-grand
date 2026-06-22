@@ -44,7 +44,7 @@ const LOGIN_CSS = [
   '.forgot-link:hover{color:var(--red)}',
   '.input-wrap{position:relative;display:flex;align-items:center}',
   '.input-icon{position:absolute;left:14px;font-size:.85rem;color:var(--brown-light);pointer-events:none}',
-  '.form-input{width:100%;padding:12px 14px 12px 38px;border:1.5px solid var(--cream-dark);border-radius:12px;font-family:var(--font-body);font-size:.92rem;color:var(--brown);background:var(--cream);transition:var(--transition);outline:none}',
+  '.form-input{width:100%;padding:12px 14px 12px 38px;border:1.5px solid var(--cream-dark);border-radius:12px;font-family:var(--font-body);font-size:1rem;color:var(--brown);background:var(--cream);transition:var(--transition);outline:none}',
   '.form-input:focus{border-color:var(--gold);background:white;box-shadow:0 0 0 3px rgba(200,144,10,.1)}',
   '.form-input::placeholder{color:rgba(107,58,31,.35)}',
   '.pw-toggle{position:absolute;right:12px;color:var(--brown-light);font-size:.85rem;transition:color var(--transition);padding:4px}',
@@ -404,31 +404,48 @@ function bindRegisterForm(c) {
     if (error) { setLoading(btn, false); showToast(error.message, 'error'); return; }
 
     if (data.user) {
-      await supabase.from('users').insert({
+      /* Upsert (not insert) — on_auth_user_created trigger may have already
+         created a bare row; insert alone would fail silently on conflict
+         and these custom fields (phone/birthday/referral_code) would be lost */
+      const { error: userErr } = await supabase.from('users').upsert({
         id:            data.user.id,
         full_name:     name,
         email:         email,
         phone:         phone    || null,
         birthday:      birthday || null,
         referral_code: genCode(name),
-      });
-      await supabase.from('user_preferences').insert({ user_id: data.user.id });
+      }, { onConflict: 'id' });
+      if (userErr) console.warn('[Register] users upsert failed:', userErr.message);
+
+      const { error: prefErr } = await supabase
+        .from('user_preferences')
+        .upsert({ user_id: data.user.id }, { onConflict: 'user_id' });
+      if (prefErr) console.warn('[Register] preferences upsert failed:', prefErr.message);
 
       if (referral) {
         const { data: ref } = await supabase
           .from('users').select('id').eq('referral_code', referral).single();
         if (ref) {
-          await supabase.from('referrals').insert({
+          const { error: refErr } = await supabase.from('referrals').insert({
             referrer_id:   ref.id,
             referred_id:   data.user.id,
             referral_code: referral,
           });
+          if (refErr) console.warn('[Register] referral insert failed:', refErr.message);
         }
+      }
+
+      if (userErr) {
+        showToast('Account created, but profile setup had an issue. Please complete your details in Settings.', 'info', 6000);
       }
     }
 
     setLoading(btn, false);
-    showToast('Account created! Check your email to verify.', 'success');
+    if (!data.user || !data.session) {
+      showToast('Account created! Check your email to verify.', 'success');
+    } else {
+      showToast('Welcome to Kiththa Grand! 🌶️', 'success');
+    }
     setTimeout(() => switchForm(c, 'login'), 1500);
   });
 }

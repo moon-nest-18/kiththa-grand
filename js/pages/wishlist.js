@@ -317,7 +317,11 @@ async function removeItem(savedId) {
   if (row) row.remove();
 
   // DB delete
-  await supabase.from('saved_items').delete().eq('id', sid);
+  var delRes = await supabase.from('saved_items').delete().eq('id', sid);
+  if (delRes.error) {
+    showToast('Could not remove item. Please refresh and try again.', 'error');
+    return;
+  }
 
   // Update module state + global wishlist state
   var gone = null;

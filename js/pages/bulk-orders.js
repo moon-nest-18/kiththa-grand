@@ -36,7 +36,7 @@ const BULK_CSS = [
   '.bform-group{margin-bottom:18px}',
   '.bform-label{display:block;font-family:var(--font-sub);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--brown-light);margin-bottom:7px}',
   '.bform-label span{color:var(--red);margin-left:2px}',
-  '.bform-input{width:100%;padding:12px 16px;border:1.5px solid var(--cream-dark);border-radius:12px;font-family:var(--font-body);font-size:.9rem;color:var(--brown);background:var(--cream);outline:none;transition:.2s}',
+  '.bform-input{width:100%;padding:12px 16px;border:1.5px solid var(--cream-dark);border-radius:12px;font-family:var(--font-body);font-size:1rem;color:var(--brown);background:var(--cream);outline:none;transition:.2s}',
   '.bform-input:focus{border-color:var(--gold);background:white;box-shadow:0 0 0 3px rgba(200,144,10,.1)}',
   '.bform-input::placeholder{color:rgba(61,28,2,.3)}',
   '.bform-select{appearance:none;-webkit-appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'8\'%3E%3Cpath d=\'M0 0l6 8 6-8z\' fill=\'%236B3A1F\'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}',
@@ -181,7 +181,7 @@ function buildPage() {
     + '</div>'
     + '<div class="bform-group">'
     + '<label class="bform-label">Company Name</label>'
-    + '<input type="text" id="bf-company" class="bform-input" placeholder="Acme Spices Ltd." />'
+    + '<input type="text" id="bf-company" class="bform-input" placeholder="Colombo Spice Traders" />'
     + '</div>'
     + '</div>'
 

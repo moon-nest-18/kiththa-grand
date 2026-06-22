@@ -158,7 +158,7 @@ export const router = {
     document.title = titles[page] || 'Kiththa Grand';
 
     /* Active nav link highlight */
-    document.querySelectorAll('.nav-link').forEach(function(l) {
+    document.querySelectorAll('.nav-link, .mob-nav ul a').forEach(function(l) {
       l.classList.toggle('active', l.dataset.page === page);
     });
 

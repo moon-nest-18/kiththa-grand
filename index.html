@@ -6,6 +6,14 @@
   <title>Kiththa Grand — Pure Ceylon Spices</title>
   <meta name="description" content="Authentic pure Ceylon spices, sourced directly from Sri Lanka. Whole spices, ground spices, and gift sets." />
 
+  <!-- Social sharing -->
+  <meta property="og:title" content="Kiththa Grand — Pure Ceylon Spices" />
+  <meta property="og:description" content="Authentic pure Ceylon spices, sourced directly from Sri Lanka. Whole spices, ground spices, and gift sets." />
+  <meta property="og:image" content="https://kiththagrand.com/images/kiththa%20LOGO%20(4).png" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://kiththagrand.com" />
+  <meta name="twitter:card" content="summary_large_image" />
+
   <!-- Preconnect to external origins -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -38,7 +46,7 @@
           <div class="emblem-ring ring-2"></div>
           <div class="emblem-center">
             <div class="emblem-icon">
-    <img src="/images/kiththa LOGO (4).png" alt="Bizmate Logo" style="width: 100%; height: 100%;">
+    <img src="/images/kiththa LOGO (4).png" alt="Kiththa Grand" style="width: 100%; height: 100%;">
 </div>
             
           </div>
@@ -156,6 +164,7 @@
         <li><a href="#" data-page="bulk-orders"><i class="fas fa-industry"></i><span>Bulk Orders</span></a></li>
         <li><a href="#" data-page="about"><i class="fas fa-leaf"></i><span>Our Story</span></a></li>
         <li><a href="#" data-page="contact"><i class="fas fa-envelope"></i><span>Contact</span></a></li>
+        <li id="mob-admin-nav-link" style="display:none"><a href="#" data-page="admin"><i class="fas fa-shield-alt"></i><span>Admin</span></a></li>
       </ul>
     </nav>
     <div class="mob-quick-actions">
@@ -446,10 +455,10 @@
               </div>
               <p class="footer-tagline">Pure Ceylon Spices<br/>දිවෙන රසය</p>
               <div class="footer-social">
-                <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
-                <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                <a href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
-                <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                <a id="footer-fb" href="#" aria-label="Facebook" style="display:none"><i class="fab fa-facebook"></i></a>
+                <a id="footer-ig" href="#" aria-label="Instagram" style="display:none"><i class="fab fa-instagram"></i></a>
+                <a id="footer-wa" href="https://wa.me/94771234567" target="_blank" rel="noopener" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                <a id="footer-yt" href="#" aria-label="YouTube" style="display:none"><i class="fab fa-youtube"></i></a>
               </div>
             </div>
             <!-- Links -->
@@ -475,9 +484,9 @@
             <div class="footer-col">
               <h4>Contact</h4>
               <ul>
-                <li><i class="fab fa-whatsapp"></i> +94 77 123 4567</li>
-                <li><i class="fas fa-envelope"></i> hello@kiththagrand.com</li>
-                <li><i class="fas fa-map-marker-alt"></i> Colombo, Sri Lanka</li>
+                <li><i class="fab fa-whatsapp"></i> <span id="footer-wa-text">+94 77 123 4567</span></li>
+                <li><i class="fas fa-envelope"></i> <span id="footer-email-text">hello@kiththagrand.com</span></li>
+                <li><i class="fas fa-map-marker-alt"></i> <span id="footer-location-text">Colombo, Sri Lanka</span></li>
               </ul>
               <!-- Newsletter -->
               <div class="newsletter">

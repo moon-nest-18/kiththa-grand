@@ -4,6 +4,7 @@
 ================================================================ */
 
 import { initReveals, showToast } from '../app.js';
+import { supabase }               from '../supabase.js';
 
 /* ── CSS ── */
 const CSS = [
@@ -45,7 +46,7 @@ const CSS = [
   '.cf-group{margin-bottom:18px}',
   '.cf-label{display:block;font-family:var(--font-sub);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--brown-light);margin-bottom:7px}',
   '.cf-label span{color:var(--red);margin-left:2px}',
-  '.cf-input{width:100%;padding:12px 16px;border:1.5px solid var(--cream-dark);border-radius:12px;font-family:var(--font-body);font-size:.9rem;color:var(--brown);background:var(--cream);outline:none;transition:.2s;box-sizing:border-box}',
+  '.cf-input{width:100%;padding:12px 16px;border:1.5px solid var(--cream-dark);border-radius:12px;font-family:var(--font-body);font-size:1rem;color:var(--brown);background:var(--cream);outline:none;transition:.2s;box-sizing:border-box}',
   '.cf-input:focus{border-color:var(--gold);background:white;box-shadow:0 0 0 3px rgba(200,144,10,.1)}',
   '.cf-input::placeholder{color:rgba(61,28,2,.3)}',
   '.cf-select{appearance:none;-webkit-appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'8\'%3E%3Cpath d=\'M0 0l6 8 6-8z\' fill=\'%236B3A1F\'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}',
@@ -119,24 +120,28 @@ function renderHero() {
   );
 }
 
-function renderQuickCards() {
+function renderQuickCards(s) {
+  var waDigits = (s.whatsapp_number || '94771234567').replace(/[^0-9]/g, '');
+  var waDisplay = '+' + waDigits;
+  var email = s.shop_email || 'hello@kiththagrand.com';
+  var location = s.shop_location || 'Colombo, Sri Lanka';
   return (
     '<section class="contact-quick">'
       + '<div class="container">'
         + '<div class="contact-quick-grid">'
-          + '<a class="contact-quick-card reveal" href="https://wa.me/94771234567" target="_blank" rel="noopener">'
+          + '<a class="contact-quick-card reveal" href="https://wa.me/' + waDigits + '" target="_blank" rel="noopener">'
             + '<div class="cq-icon whatsapp"><i class="fab fa-whatsapp"></i></div>'
             + '<div>'
               + '<p class="cq-label">WhatsApp</p>'
-              + '<p class="cq-value">+94 77 123 4567</p>'
+              + '<p class="cq-value">' + waDisplay + '</p>'
               + '<p class="cq-note">Fastest response &mdash; usually within an hour</p>'
             + '</div>'
           + '</a>'
-          + '<a class="contact-quick-card reveal" style="--delay:.06s" href="mailto:hello@kiththagrand.com">'
+          + '<a class="contact-quick-card reveal" style="--delay:.06s" href="mailto:' + email + '">'
             + '<div class="cq-icon email"><i class="fas fa-envelope"></i></div>'
             + '<div>'
               + '<p class="cq-label">Email</p>'
-              + '<p class="cq-value">hello@kiththagrand.com</p>'
+              + '<p class="cq-value">' + email + '</p>'
               + '<p class="cq-note">We reply within 24 hours on business days</p>'
             + '</div>'
           + '</a>'
@@ -144,7 +149,7 @@ function renderQuickCards() {
             + '<div class="cq-icon location"><i class="fas fa-map-marker-alt"></i></div>'
             + '<div>'
               + '<p class="cq-label">Location</p>'
-              + '<p class="cq-value">Colombo, Sri Lanka</p>'
+              + '<p class="cq-value">' + location + '</p>'
               + '<p class="cq-note">Shipping worldwide from the island of spices</p>'
             + '</div>'
           + '</div>'
@@ -195,7 +200,7 @@ function renderForm() {
         + '<div class="cf-success-ico">&#127801;</div>'
         + '<h3>Message Received!</h3>'
         + '<p>Thank you for reaching out. Our team will get back to you within 24 hours. In the meantime, feel free to chat with us directly on WhatsApp for a faster response.</p>'
-        + '<a class="cf-success-wa" href="https://wa.me/94771234567" target="_blank" rel="noopener">'
+        + '<a class="cf-success-wa" id="cf-success-wa-link" href="https://wa.me/94771234567" target="_blank" rel="noopener">'
           + '<i class="fab fa-whatsapp"></i> Chat on WhatsApp'
         + '</a>'
       + '</div>'
@@ -203,18 +208,22 @@ function renderForm() {
   );
 }
 
-function renderInfo() {
+function renderInfo(s) {
+  var waDigits = (s.whatsapp_number || '94771234567').replace(/[^0-9]/g, '');
+  var waDisplay = '+' + waDigits;
+  var email = s.shop_email || 'hello@kiththagrand.com';
+  var location = s.shop_location || 'Colombo, Sri Lanka';
   return (
     '<div class="contact-info">'
       + '<div class="ci-card reveal" style="--delay:.1s">'
         + '<p class="ci-card-title"><i class="fas fa-address-card"></i> Contact Details</p>'
         + '<div class="ci-item">'
           + '<div class="ci-ico"><i class="fab fa-whatsapp"></i></div>'
-          + '<div class="ci-txt"><label>WhatsApp</label><a href="https://wa.me/94771234567" target="_blank">+94 77 123 4567</a></div>'
+          + '<div class="ci-txt"><label>WhatsApp</label><a href="https://wa.me/' + waDigits + '" target="_blank">' + waDisplay + '</a></div>'
         + '</div>'
         + '<div class="ci-item">'
           + '<div class="ci-ico"><i class="fas fa-envelope"></i></div>'
-          + '<div class="ci-txt"><label>Email</label><a href="mailto:hello@kiththagrand.com">hello@kiththagrand.com</a></div>'
+          + '<div class="ci-txt"><label>Email</label><a href="mailto:' + email + '">' + email + '</a></div>'
         + '</div>'
         + '<div class="ci-item">'
           + '<div class="ci-ico"><i class="fas fa-globe"></i></div>'
@@ -222,11 +231,11 @@ function renderInfo() {
         + '</div>'
         + '<div class="ci-item">'
           + '<div class="ci-ico"><i class="fas fa-map-marker-alt"></i></div>'
-          + '<div class="ci-txt"><label>Location</label><span>Colombo, Sri Lanka</span></div>'
+          + '<div class="ci-txt"><label>Location</label><span>' + location + '</span></div>'
         + '</div>'
         + '<div class="ci-map">'
           + '<span class="ci-map-pin">&#128205;</span>'
-          + '<p class="ci-map-label">Colombo, Sri Lanka &mdash; Island of Spices</p>'
+          + '<p class="ci-map-label">' + location + ' &mdash; Island of Spices</p>'
         + '</div>'
       + '</div>'
 
@@ -251,16 +260,26 @@ export async function init(container) {
     document.head.appendChild(s);
   }
 
+  var settingsMap = {};
+  var settingsRes = await supabase.from('settings').select('key, value')
+    .in('key', ['whatsapp_number', 'shop_email', 'shop_location']);
+  (settingsRes.data || []).forEach(function(r) { settingsMap[r.key] = r.value; });
+
   container.innerHTML = (
     '<div class="contact-page">'
       + renderHero()
-      + renderQuickCards()
+      + renderQuickCards(settingsMap)
       + '<section class="contact-body"><div class="container"><div class="contact-grid">'
         + renderForm()
-        + renderInfo()
+        + renderInfo(settingsMap)
       + '</div></div></section>'
     + '</div>'
   );
+
+  var successWaLink = container.querySelector('#cf-success-wa-link');
+  if (successWaLink) {
+    successWaLink.href = 'https://wa.me/' + (settingsMap.whatsapp_number || '94771234567').replace(/[^0-9]/g, '');
+  }
 
   /* form submit */
   var form    = container.querySelector('#contact-form');

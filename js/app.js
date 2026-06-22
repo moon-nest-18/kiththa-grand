@@ -41,6 +41,50 @@ const state = {
 };
 
 /* ────────────────────────────────────────────────────────────────
+   SITE SETTINGS (contact details + social links, admin-editable)
+──────────────────────────────────────────────────────────────── */
+function applySiteSettings(rows) {
+  var map = {};
+  rows.forEach(function(r) { map[r.key] = r.value; });
+
+  var waNum = map.whatsapp_number;
+  if (waNum) {
+    var waText = document.getElementById('footer-wa-text');
+    var waLink = document.getElementById('footer-wa');
+    if (waText) waText.textContent = '+' + waNum.replace(/^\+/, '');
+    if (waLink) waLink.href = 'https://wa.me/' + waNum.replace(/[^0-9]/g, '');
+  }
+  var email = map.shop_email;
+  if (email) {
+    var emailText = document.getElementById('footer-email-text');
+    if (emailText) emailText.textContent = email;
+  }
+  var location = map.shop_location;
+  if (location) {
+    var locText = document.getElementById('footer-location-text');
+    if (locText) locText.textContent = location;
+  }
+
+  var socials = [
+    { key: 'social_facebook',  id: 'footer-fb' },
+    { key: 'social_instagram', id: 'footer-ig' },
+    { key: 'social_youtube',   id: 'footer-yt' },
+  ];
+  socials.forEach(function(s) {
+    var url = map[s.key];
+    var link = document.getElementById(s.id);
+    if (link && url) { link.href = url; link.style.display = ''; }
+  });
+
+  state.siteSettings = map;
+}
+
+supabase.from('settings')
+  .select('key, value')
+  .in('key', ['whatsapp_number', 'shop_email', 'shop_location', 'social_facebook', 'social_instagram', 'social_youtube'])
+  .then(function({ data }) { if (data) applySiteSettings(data); });
+
+/* ────────────────────────────────────────────────────────────────
    LOADING SCREEN
 ──────────────────────────────────────────────────────────────── */
 function hideLoading() {
@@ -63,6 +107,7 @@ const cursor      = document.getElementById('cursor');
 const cursorTrail = document.getElementById('cursor-trail');
 
 if (window.matchMedia('(pointer:fine)').matches && cursor && cursorTrail) {
+  document.body.classList.add('custom-cursor-active');
   document.addEventListener('mousemove', function(e) {
     cursor.style.left = e.clientX + 'px';
     cursor.style.top  = e.clientY + 'px';
@@ -85,15 +130,17 @@ window.addEventListener('scroll', function() {
 var mobileOverlay = document.getElementById('mobile-overlay');
 
 function closeMobileMenu() {
-  if (hamburger) hamburger.classList.remove('open');
+  if (hamburger) { hamburger.classList.remove('open'); hamburger.setAttribute('aria-expanded', 'false'); }
   if (mobileMenu) mobileMenu.classList.remove('open');
   if (mobileOverlay) mobileOverlay.classList.remove('open');
   document.body.classList.remove('menu-open');
 }
 
 if (hamburger) {
+  hamburger.setAttribute('aria-expanded', 'false');
   hamburger.addEventListener('click', function() {
     var isOpen = hamburger.classList.toggle('open');
+    hamburger.setAttribute('aria-expanded', String(isOpen));
     if (mobileMenu) mobileMenu.classList.toggle('open', isOpen);
     if (mobileOverlay) mobileOverlay.classList.toggle('open', isOpen);
     document.body.classList.toggle('menu-open', isOpen);
@@ -103,6 +150,10 @@ if (hamburger) {
 if (mobileOverlay) {
   mobileOverlay.addEventListener('click', closeMobileMenu);
 }
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape' && mobileMenu && mobileMenu.classList.contains('open')) closeMobileMenu();
+});
 
 /* ────────────────────────────────────────────────────────────────
    ROUTING
@@ -282,6 +333,8 @@ const authBtn = document.getElementById('auth-btn');
 function updateAuthUI(user) {
   if (!authBtn) return;
   var mobAuthBtn = document.getElementById('mob-auth-btn');
+  var adminLink = document.getElementById('admin-nav-link');
+  var mobAdminLink = document.getElementById('mob-admin-nav-link');
   if (user) {
     authBtn.innerHTML = '<i class="fas fa-user-check"></i><span>Account</span>';
     authBtn.dataset.page = 'profile';
@@ -289,6 +342,14 @@ function updateAuthUI(user) {
     state.user = user;
     loadCart();
     loadWishlist();
+    if (adminLink || mobAdminLink) {
+      supabase.from('users').select('role').eq('id', user.id).single()
+        .then(function({ data }) {
+          var isAdmin = data && data.role === 'admin';
+          if (adminLink) adminLink.style.display = isAdmin ? 'block' : 'none';
+          if (mobAdminLink) mobAdminLink.style.display = isAdmin ? 'block' : 'none';
+        });
+    }
   } else {
     authBtn.innerHTML = '<i class="fas fa-user"></i><span>Sign In</span>';
     authBtn.dataset.page = 'login';
@@ -296,15 +357,9 @@ function updateAuthUI(user) {
     state.user = null;
     updateCartBadge(0);
     updateWishlistBadge(0);
+    if (adminLink) adminLink.style.display = 'none';
+    if (mobAdminLink) mobAdminLink.style.display = 'none';
   }
-  // Admin link show/hide
-const adminLink = document.getElementById('admin-nav-link');
-if (adminLink) {
-  supabase.from('users').select('role').eq('id', user.id).single()
-    .then(function({ data }) {
-      adminLink.style.display = data && data.role === 'admin' ? 'block' : 'none';
-    });
-}
 }
 
 /* Page load වෙද්දී existing session check */
@@ -382,25 +437,29 @@ export async function addToCart(productId) {
       void badge.offsetWidth;
       badge.classList.add('pulse');
     }
+  } else {
+    showToast('Could not add to cart. Please try again.', 'error');
   }
 }
 
 export async function removeFromCart(productId) {
   if (!state.user) return;
-  await supabase.from('cart').delete()
+  const { error } = await supabase.from('cart').delete()
     .eq('user_id', state.user.id)
     .eq('product_id', productId);
+  if (error) { showToast('Could not remove item. Please try again.', 'error'); return; }
   await loadCart();
 }
 
 export async function setCartQuantity(productId, qty) {
   if (!state.user) return;
   if (qty <= 0) { await removeFromCart(productId); return; }
-  await supabase.from('cart').upsert({
+  const { error } = await supabase.from('cart').upsert({
     user_id:    state.user.id,
     product_id: productId,
     quantity:   qty
   }, { onConflict: 'user_id,product_id' });
+  if (error) { showToast('Could not update quantity. Please try again.', 'error'); return; }
   await loadCart();
 }
 
@@ -429,13 +488,15 @@ export async function toggleWishlist(productId) {
   }
   const isWished = state.wishlist.includes(productId);
   if (isWished) {
-    await supabase.from('saved_items').delete()
+    const { error } = await supabase.from('saved_items').delete()
       .eq('user_id', state.user.id).eq('product_id', productId);
+    if (error) { showToast('Could not update wishlist. Please try again.', 'error'); return; }
     showToast('Removed from wishlist', 'info');
   } else {
-    await supabase.from('saved_items').insert({
+    const { error } = await supabase.from('saved_items').insert({
       user_id: state.user.id, product_id: productId
     });
+    if (error) { showToast('Could not update wishlist. Please try again.', 'error'); return; }
     showToast('Saved to wishlist ❤️', 'success');
   }
   await loadWishlist();
@@ -607,14 +668,17 @@ export function launchConfetti() {
    INIT
 ──────────────────────────────────────────────────────────────── */
 /* Home page products */
+var wasHomeActive = false;
 const appObserver = new MutationObserver(function() {
   const homePage = document.getElementById('page-home');
-  if (homePage && homePage.classList.contains('active')) {
+  const isHomeActive = !!(homePage && homePage.classList.contains('active'));
+  if (isHomeActive && !wasHomeActive) {
     loadFeaturedProducts();
   }
+  wasHomeActive = isHomeActive;
 });
 appObserver.observe(document.getElementById('app'), {
-  childList: false, attributes: true, subtree: true
+  childList: false, attributes: true, attributeFilter: ['class'], subtree: false
 });
 /* ────────────────────────────────────────────────────────────────
    LIVE EXCHANGE RATES

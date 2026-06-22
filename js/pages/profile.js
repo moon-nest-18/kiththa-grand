@@ -395,7 +395,7 @@ const CSS = `
 .pform-label{display:block;font-family:var(--font-sub);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--brown-light);margin-bottom:6px}
 .pinput-wrap{position:relative;display:flex;align-items:center}
 .pinput-icon{position:absolute;left:14px;font-size:.82rem;color:var(--brown-light);pointer-events:none;z-index:1}
-.pinput{width:100%;padding:11px 14px 11px 36px;border:1.5px solid var(--cream-dark);border-radius:10px;font-family:var(--font-body);font-size:.88rem;color:var(--brown);background:var(--cream);outline:none;transition:var(--transition)}
+.pinput{width:100%;padding:11px 14px 11px 36px;border:1.5px solid var(--cream-dark);border-radius:10px;font-family:var(--font-body);font-size:1rem;color:var(--brown);background:var(--cream);outline:none;transition:var(--transition)}
 .pinput:focus{border-color:var(--gold);background:white;box-shadow:0 0 0 3px rgba(200,144,10,.1)}
 .pselect{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:32px}
 .edit-actions{display:flex;gap:10px;margin-top:8px}

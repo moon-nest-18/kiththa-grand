@@ -9,6 +9,7 @@
   --red-dark:    #6B1A00;
   --red-light:   #A83010;
   --gold:        #C8900A;
+  --gold-text:   #7A5208; /* darkened gold — passes 4.5:1 on cream/white for text & icons */
   --gold-light:  #F0B429;
   --gold-pale:   #FDE68A;
   --cream:       #FDF3E3;
@@ -44,14 +45,21 @@ body {
   background: var(--cream);
   color: var(--brown);
   overflow-x: hidden;
-  cursor: none; /* custom cursor */
 }
 body.loading { overflow: hidden; }
 a { text-decoration: none; color: inherit; }
 ul { list-style: none; }
 img { max-width: 100%; display: block; }
-button { cursor: none; border: none; background: none; font-family: var(--font-body); }
+button { border: none; background: none; font-family: var(--font-body); }
 input, select { font-family: var(--font-body); }
+
+/* Custom cursor only active once JS confirms a fine pointer is present —
+   prevents an invisible cursor if JS fails to load or runs late */
+@media (pointer: fine) {
+  body.custom-cursor-active,
+  body.custom-cursor-active a,
+  body.custom-cursor-active button { cursor: none; }
+}
 
 /* ── Custom Cursor ── */
 .custom-cursor {
@@ -267,7 +275,7 @@ body:has(button:hover) .custom-cursor { width: 28px; height: 28px; background: v
 }
 .icon-btn {
   position: relative;
-  width: 40px; height: 40px;
+  width: 44px; height: 44px;
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   font-size: 1rem;
@@ -306,11 +314,11 @@ body:has(button:hover) .custom-cursor { width: 28px; height: 28px; background: v
 
 /* ── Mobile Nav ── */
 .hamburger {
-  display: none; flex-direction: column; gap: 5px;
-  width: 36px; padding: 4px;
+  display: none; flex-direction: column; justify-content: center; align-items: center; gap: 5px;
+  width: 44px; height: 44px; padding: 4px;
 }
 .hamburger span {
-  display: block; height: 2px;
+  display: block; width: 22px; height: 2px;
   background: var(--cream);
   border-radius: 2px;
   transition: var(--transition);
@@ -422,7 +430,7 @@ body.menu-open { overflow: hidden; }
 .mob-nav ul a i {
   width: 20px;
   text-align: center;
-  color: var(--gold);
+  color: var(--gold-text);
   font-size: 0.9rem;
   flex-shrink: 0;
 }
@@ -569,7 +577,7 @@ body.menu-open { overflow: hidden; }
   font-size: 0.75rem;
   letter-spacing: 0.25em;
   text-transform: uppercase;
-  color: var(--gold);
+  color: var(--gold-text);
   margin-bottom: 12px;
 }
 .section-title {
@@ -599,6 +607,16 @@ body.menu-open { overflow: hidden; }
   display: flex; align-items: center;
   overflow: hidden;
   padding: 120px 32px 80px;
+}
+@media (min-width: 1025px) {
+  .hero { height: 100vh; max-height: 100vh; padding: 100px 32px 48px; }
+  .hero-title { font-size: clamp(3rem, min(6vw, 8vh), 5rem); margin-bottom: clamp(12px, 2.5vh, 24px); }
+  .hero-eyebrow { margin-bottom: clamp(10px, 2vh, 20px); }
+  .hero-desc { margin-bottom: clamp(16px, 3vh, 36px); }
+  .hero-actions { margin-bottom: clamp(20px, 4vh, 56px); }
+}
+@media (min-width: 1025px) and (max-height: 760px) {
+  .hero { height: auto; min-height: 100vh; max-height: none; }
 }
 .hero-bg {
   position: absolute; inset: 0;
@@ -973,11 +991,6 @@ body.menu-open { overflow: hidden; }
 @media (max-width: 1024px) {
   .categories-grid { grid-template-columns: repeat(2, 1fr); }
 }
-@media (max-width: 480px) {
-  .categories-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
-  .cat-emoji { font-size: 2.8rem; }
-  .cat-name { font-size: .95rem; }
-}
 /* ── Products Grid ── */
 .products-grid {
   display: grid;
@@ -1025,7 +1038,7 @@ body.menu-open { overflow: hidden; }
 .product-cat {
   font-family: var(--font-sub); font-size: 0.65rem;
   letter-spacing: 0.15em; text-transform: uppercase;
-  color: var(--gold); margin-bottom: 8px;
+  color: var(--gold-text); margin-bottom: 8px;
 }
 .product-name {
   font-family: var(--font-sub); font-size: 1rem;
@@ -1286,7 +1299,7 @@ body.menu-open { overflow: hidden; }
   .hamburger { display: flex; }
   .nav-inner { padding: 0 14px; gap: 0; justify-content: flex-start; align-items: center; }
   .nav-actions { margin-left: auto; display: flex; align-items: center; gap: 4px; }
-  .cart-btn { width: 40px; height: 40px; padding: 0; border-radius: 50%; }
+  .cart-btn { width: 44px; height: 44px; padding: 0; border-radius: 50%; }
   .nav-logo-text { display: block; }
   .nav-logo-main {
     display: block;
@@ -1303,7 +1316,7 @@ body.menu-open { overflow: hidden; }
   .footer-grid { grid-template-columns: 1fr; gap: 28px; }
   .footer-brand { max-width: 100%; }
   .loyalty-inner { flex-direction: column; text-align: center; gap: 20px; }
-  .loyalty-btn { width: 100%; justify-content: center; }
+  .loyalty-inner .btn-gold { width: 100%; justify-content: center; }
   /* Hero — center everything on mobile */
   .hero-content { margin-left: 0; text-align: center; }
   .hero-title { font-size: clamp(2.2rem, 9vw, 3rem); line-height: 1.1; }

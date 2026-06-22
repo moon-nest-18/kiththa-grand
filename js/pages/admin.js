@@ -8,6 +8,10 @@ import { supabase }               from '../supabase.js';
 import { router }                 from '../router.js';
 import { showToast, initReveals } from '../app.js';
 
+function escapeHtmlAttr(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
 /* ── CSS ── */
 const ADMIN_CSS = [
   '.admin-page{min-height:100vh;background:#1c1008;display:flex;font-family:"Inter",system-ui,-apple-system,sans-serif}',
@@ -203,6 +207,8 @@ const NAV = [
   { section: 'Community' },
   { id: 'customers',  icon: 'fas fa-users',           label: 'Customers' },
   { id: 'reviews',    icon: 'fas fa-star',            label: 'Reviews' },
+  { section: 'Content' },
+  { id: 'story',      icon: 'fas fa-book-open',       label: 'Our Story' },
   { section: 'System' },
   { id: 'settings',   icon: 'fas fa-cog',             label: 'Settings' },
 ];
@@ -268,7 +274,7 @@ function buildShell(profile) {
   wrap.innerHTML = `
   <aside class="admin-sidebar" id="admin-sidebar">
     <div class="sidebar-logo">
-      <img src="images/logo.png" alt="Logo" onerror="this.style.display='none'" />
+      <img src="/images/kiththa LOGO (4).png" alt="Kiththa Grand" onerror="this.style.display='none'" />
       <div>
         <div class="sidebar-logo-name">Kiththa Grand</div>
         <div class="sidebar-logo-sub">Admin Panel</div>
@@ -305,6 +311,7 @@ function buildShell(profile) {
       <div class="admin-section" id="section-bulk"></div>
       <div class="admin-section" id="section-customers"></div>
       <div class="admin-section" id="section-reviews"></div>
+      <div class="admin-section" id="section-story"></div>
       <div class="admin-section" id="section-settings"></div>
     </div>
   </main>
@@ -478,7 +485,7 @@ function switchSection(container, id) {
 
   var titles = { dashboard:'Dashboard', products:'Products', categories:'Categories',
     coupons:'Coupons', orders:'Orders', bulk:'Bulk Orders',
-    customers:'Customers', reviews:'Reviews', settings:'Settings' };
+    customers:'Customers', reviews:'Reviews', story:'Our Story', settings:'Settings' };
   var titleEl = container.querySelector('#topbar-title');
   if (titleEl) titleEl.textContent = titles[id] || id;
 
@@ -490,6 +497,7 @@ function switchSection(container, id) {
   if (id === 'reviews')    loadReviews(container);
   if (id === 'bulk')       loadBulkOrders(container);
   if (id === 'coupons')    loadCoupons(container);
+  if (id === 'story')      loadStory(container);
   if (id === 'settings')   loadSettings(container);
 }
 
@@ -799,12 +807,13 @@ function openProductModal(container, product, categories) {
 
     btn.disabled = true; btn.textContent = 'Saving...';
 
-    /* Upload new images */
+    /* Upload new images — runs through AI background removal + enhance */
     var uploadedUrls = [];
     for (var i = 0; i < productImages.length; i++) {
       var img = productImages[i];
       if (img.startsWith('data:') || img.startsWith('blob:')) {
-        var url = await uploadImage(img, 'products');
+        btn.textContent = 'AI processing image ' + (i + 1) + '/' + productImages.length + '...';
+        var url = await uploadImageAI(img, 'products');
         if (url) uploadedUrls.push(url);
       } else {
         uploadedUrls.push(img);
@@ -908,6 +917,24 @@ function renderVariants(container) {
   });
 }
 
+/* ── AI IMAGE PROCESSING (background removal + enhance) for product photos ── */
+async function uploadImageAI(dataUrl, bucket) {
+  try {
+    var res = await supabase.functions.invoke('process-product-image', {
+      body: { image: dataUrl, bucket: bucket },
+    });
+    if (res.error || !res.data || !res.data.url) {
+      var msg = (res.data && res.data.error) || (res.error && res.error.message) || 'AI processing failed';
+      showToast(msg + ' — uploading original instead', 'error');
+      return uploadImage(dataUrl, bucket);
+    }
+    return res.data.url;
+  } catch (e) {
+    showToast('AI processing failed — uploading original instead', 'error');
+    return uploadImage(dataUrl, bucket);
+  }
+}
+
 /* ── IMAGE UPLOAD to Supabase Storage ── */
 async function uploadImage(dataUrl, bucket) {
   try {
@@ -951,13 +978,13 @@ async function loadCategories(container) {
       + '</div>';
   }).join('');
 
-  sec.innerHTML = `
-  <div class="a-search-bar">
-    <div style="flex:1"></div>
-    <button class="a-btn gold" id="btn-add-cat"><i class="fas fa-plus"></i> Add Category</button>
-  </div>
-  <div class="cat-grid">${catsHTML || '<div class="a-empty">No categories yet</div>'}</div>
-  `;
+  sec.innerHTML = (
+    '<div class="a-search-bar">'
+      + '<div style="flex:1"></div>'
+      + '<button class="a-btn gold" id="btn-add-cat"><i class="fas fa-plus"></i> Add Category</button>'
+    + '</div>'
+    + '<div class="cat-grid">' + (catsHTML || '<div class="a-empty">No categories yet</div>') + '</div>'
+  );
 
   sec.querySelector('#btn-add-cat')?.addEventListener('click', function() {
     openCategoryModal(container, null);
@@ -970,8 +997,18 @@ async function loadCategories(container) {
   });
   sec.querySelectorAll('[data-del-c]').forEach(function(btn) {
     btn.addEventListener('click', async function() {
-      if (!confirm('Delete this category?')) return;
-      var res = await supabase.from('categories').delete().eq('id', btn.dataset.delC);
+      var catId = btn.dataset.delC;
+      var countRes = await supabase.from('products').select('id', { count: 'exact', head: true }).eq('category_id', catId);
+      if (countRes.error) { showToast(countRes.error.message, 'error'); return; }
+      var n = countRes.count || 0;
+      if (n > 0) {
+        if (!confirm(n + ' product(s) use this category. Delete it anyway? They will become Uncategorized.')) return;
+        var unassignRes = await supabase.from('products').update({ category_id: null }).eq('category_id', catId);
+        if (unassignRes.error) { showToast(unassignRes.error.message, 'error'); return; }
+      } else {
+        if (!confirm('Delete this category?')) return;
+      }
+      var res = await supabase.from('categories').delete().eq('id', catId);
       if (res.error) { showToast(res.error.message, 'error'); return; }
       showToast('Category deleted!', 'success');
       loadCategories(container);
@@ -1127,7 +1164,8 @@ async function loadOrders(container) {
   sec.querySelectorAll('[data-order-id]').forEach(function(sel) {
     sel.addEventListener('change', async function() {
       if (!sel.value) return;
-      await supabase.from('orders').update({ status: sel.value }).eq('id', sel.dataset.orderId);
+      var res = await supabase.from('orders').update({ status: sel.value }).eq('id', sel.dataset.orderId);
+      if (res.error) { showToast(res.error.message, 'error'); return; }
       showToast('Status updated!', 'success');
       loadOrders(container);
     });
@@ -1227,7 +1265,8 @@ async function loadReviews(container) {
 
   sec.querySelectorAll('[data-approve]').forEach(function(btn) {
     btn.addEventListener('click', async function() {
-      await supabase.from('reviews').update({is_approved:true}).eq('id',btn.dataset.approve);
+      var res = await supabase.from('reviews').update({is_approved:true}).eq('id',btn.dataset.approve);
+      if (res.error) { showToast(res.error.message, 'error'); return; }
       showToast('Review approved!', 'success');
       loadReviews(container);
     });
@@ -1235,7 +1274,8 @@ async function loadReviews(container) {
   sec.querySelectorAll('[data-del-r]').forEach(function(btn) {
     btn.addEventListener('click', async function() {
       if (!confirm('Delete this review?')) return;
-      await supabase.from('reviews').delete().eq('id',btn.dataset.delR);
+      var res = await supabase.from('reviews').delete().eq('id',btn.dataset.delR);
+      if (res.error) { showToast(res.error.message, 'error'); return; }
       showToast('Review deleted!', 'success');
       loadReviews(container);
     });
@@ -1286,7 +1326,8 @@ async function loadBulkOrders(container) {
   sec.querySelectorAll('[data-bulk-id]').forEach(function(sel) {
     sel.addEventListener('change', async function() {
       if (!sel.value) return;
-      await supabase.from('bulk_orders').update({status:sel.value}).eq('id',sel.dataset.bulkId);
+      var res = await supabase.from('bulk_orders').update({status:sel.value}).eq('id',sel.dataset.bulkId);
+      if (res.error) { showToast(res.error.message, 'error'); return; }
       showToast('Status updated!', 'success');
       loadBulkOrders(container);
     });
@@ -1331,6 +1372,128 @@ async function loadCoupons(container) {
 }
 
 /* ════════════════════════════════════════════════════════════════
+   OUR STORY (About page content)
+════════════════════════════════════════════════════════════════ */
+var DEFAULT_STORY = {
+  heroTitle: 'From the Spice Gardens of Ceylon',
+  heroSub: 'For generations, the highlands of Sri Lanka have gifted the world with the finest spices. Kiththa Grand was born from a deep love for this heritage — to carry the purity of Ceylon spices to every kitchen on earth.',
+  originTitle: 'Where Every Spice Tells a Story',
+  originParagraphs: ['', '', ''],
+  quote: 'The spice trade built empires. We bring that same precious cargo — directly from the island of serendipity — to your table.',
+  quoteAttr: 'Kiththa Grand',
+  images: [],
+};
+var storyImages = [];
+
+async function loadStory(container) {
+  var sec = container.querySelector('#section-story');
+  if (!sec) return;
+  sec.innerHTML = '<div class="a-loading"><i class="fas fa-spinner fa-spin"></i> Loading...</div>';
+
+  var { data: row } = await supabase.from('settings').select('*').eq('key', 'about_content').maybeSingle();
+  var story = DEFAULT_STORY;
+  if (row && row.value) {
+    try { story = Object.assign({}, DEFAULT_STORY, JSON.parse(row.value)); } catch (e) {}
+  }
+  storyImages = (story.images || []).slice();
+
+  sec.innerHTML = (
+    '<div class="a-card">'
+      + '<div class="a-card-hdr"><span class="a-card-title"><i class="fas fa-book-open"></i> Hero</span></div>'
+      + '<div class="m-group"><label class="m-label">Hero Title</label><input type="text" class="m-input" id="st-hero-title" value="' + escapeHtmlAttr(story.heroTitle) + '" /></div>'
+      + '<div class="m-group"><label class="m-label">Hero Subtitle</label><textarea class="m-input" id="st-hero-sub" rows="3">' + escapeHtmlAttr(story.heroSub) + '</textarea></div>'
+    + '</div>'
+    + '<div class="a-card" style="margin-top:18px">'
+      + '<div class="a-card-hdr"><span class="a-card-title"><i class="fas fa-scroll"></i> Origin Story</span></div>'
+      + '<div class="m-group"><label class="m-label">Section Title</label><input type="text" class="m-input" id="st-origin-title" value="' + escapeHtmlAttr(story.originTitle) + '" /></div>'
+      + '<div class="m-group"><label class="m-label">Paragraph 1</label><textarea class="m-input" id="st-p1" rows="3">' + escapeHtmlAttr(story.originParagraphs[0] || '') + '</textarea></div>'
+      + '<div class="m-group"><label class="m-label">Paragraph 2</label><textarea class="m-input" id="st-p2" rows="3">' + escapeHtmlAttr(story.originParagraphs[1] || '') + '</textarea></div>'
+      + '<div class="m-group"><label class="m-label">Paragraph 3</label><textarea class="m-input" id="st-p3" rows="3">' + escapeHtmlAttr(story.originParagraphs[2] || '') + '</textarea></div>'
+      + '<div class="m-group"><label class="m-label">Quote</label><textarea class="m-input" id="st-quote" rows="2">' + escapeHtmlAttr(story.quote) + '</textarea></div>'
+      + '<div class="m-group"><label class="m-label">Quote Attribution</label><input type="text" class="m-input" id="st-quote-attr" value="' + escapeHtmlAttr(story.quoteAttr) + '" /></div>'
+    + '</div>'
+    + '<div class="a-card" style="margin-top:18px">'
+      + '<div class="a-card-hdr"><span class="a-card-title"><i class="fas fa-images"></i> Story Images</span></div>'
+      + '<div class="img-upload-zone" id="st-img-zone">'
+        + '<input type="file" class="img-upload-input" id="st-img-input" multiple accept="image/*" />'
+        + '<p>Click or drop images here</p>'
+      + '</div>'
+      + '<div class="img-preview-grid" id="st-img-preview"></div>'
+    + '</div>'
+    + '<div style="margin-top:18px">'
+      + '<button class="a-btn gold" id="btn-save-story"><i class="fas fa-check"></i> Save Story</button>'
+    + '</div>'
+  );
+
+  function renderStoryImages() {
+    var grid = sec.querySelector('#st-img-preview');
+    grid.innerHTML = storyImages.map(function(url, i) {
+      return '<div class="img-preview-item" style="position:relative;display:inline-block;margin:6px">'
+        + '<img src="' + url + '" style="width:120px;height:90px;object-fit:cover;border-radius:8px;border:1px solid rgba(200,144,10,.2)" />'
+        + '<button type="button" data-rm-img="' + i + '" style="position:absolute;top:-8px;right:-8px;width:22px;height:22px;border-radius:50%;background:#c0392b;color:white;border:none;cursor:pointer">&times;</button>'
+      + '</div>';
+    }).join('');
+    grid.querySelectorAll('[data-rm-img]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        storyImages.splice(Number(btn.dataset.rmImg), 1);
+        renderStoryImages();
+      });
+    });
+  }
+  renderStoryImages();
+
+  sec.querySelector('#st-img-input').onchange = function(e) {
+    Array.prototype.forEach.call(e.target.files, function(file) {
+      var reader = new FileReader();
+      reader.onload = function(ev) {
+        storyImages.push(ev.target.result);
+        renderStoryImages();
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  sec.querySelector('#btn-save-story').addEventListener('click', async function() {
+    var btn = sec.querySelector('#btn-save-story');
+    btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+    try {
+      var uploadedImages = [];
+      for (var i = 0; i < storyImages.length; i++) {
+        var img = storyImages[i];
+        if (img.indexOf('data:') === 0) {
+          var url = await uploadImage(img, 'site');
+          if (url) uploadedImages.push(url);
+        } else {
+          uploadedImages.push(img);
+        }
+      }
+      storyImages = uploadedImages;
+
+      var newStory = {
+        heroTitle: sec.querySelector('#st-hero-title').value.trim(),
+        heroSub: sec.querySelector('#st-hero-sub').value.trim(),
+        originTitle: sec.querySelector('#st-origin-title').value.trim(),
+        originParagraphs: [
+          sec.querySelector('#st-p1').value.trim(),
+          sec.querySelector('#st-p2').value.trim(),
+          sec.querySelector('#st-p3').value.trim(),
+        ],
+        quote: sec.querySelector('#st-quote').value.trim(),
+        quoteAttr: sec.querySelector('#st-quote-attr').value.trim(),
+        images: uploadedImages,
+      };
+
+      var res = await supabase.from('settings').update({ value: JSON.stringify(newStory) }).eq('key', 'about_content');
+      if (res.error) { showToast(res.error.message, 'error'); return; }
+      showToast('Story saved!', 'success');
+      renderStoryImages();
+    } finally {
+      btn.disabled = false; btn.innerHTML = '<i class="fas fa-check"></i> Save Story';
+    }
+  });
+}
+
+/* ════════════════════════════════════════════════════════════════
    SETTINGS
 ════════════════════════════════════════════════════════════════ */
 async function loadSettings(container) {
@@ -1340,24 +1503,26 @@ async function loadSettings(container) {
 
   var { data: settings } = await supabase.from('settings').select('*');
   settings = settings || [];
+  settings = settings.filter(function(s) { return s.key.indexOf('about_') !== 0; });
 
   var fieldsHTML = settings.map(function(s) {
     return '<div class="m-group">'
       + '<label class="m-label">' + s.key.replace(/_/g,' ').toUpperCase() + '</label>'
-      + '<input type="text" class="m-input setting-input" data-key="' + s.key + '" value="' + s.value + '" />'
+      + '<input type="text" class="m-input setting-input" data-key="' + s.key + '" value="' + escapeHtmlAttr(s.value || '') + '" />'
       + '</div>';
   }).join('');
 
-  sec.innerHTML = `
-  <div class="a-card">
-    <div class="a-card-hdr">
-      <span class="a-card-title"><i class="fas fa-cog"></i> Shop Settings</span>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">${fieldsHTML}</div>
-    <div style="margin-top:18px">
-      <button class="a-btn gold" id="btn-save-settings"><i class="fas fa-check"></i> Save All Settings</button>
-    </div>
-  </div>`;
+  sec.innerHTML = (
+    '<div class="a-card">'
+      + '<div class="a-card-hdr">'
+        + '<span class="a-card-title"><i class="fas fa-cog"></i> Shop Settings</span>'
+      + '</div>'
+      + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">' + fieldsHTML + '</div>'
+      + '<div style="margin-top:18px">'
+        + '<button class="a-btn gold" id="btn-save-settings"><i class="fas fa-check"></i> Save All Settings</button>'
+      + '</div>'
+    + '</div>'
+  );
 
   sec.querySelector('#btn-save-settings')?.addEventListener('click', async function() {
     var btn = sec.querySelector('#btn-save-settings');
