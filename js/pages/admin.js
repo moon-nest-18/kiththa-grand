@@ -12,6 +12,31 @@ function escapeHtmlAttr(str) {
   return String(str).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
+/* ── Shrink a photo client-side before upload (phone camera photos can be 8-12MB,
+     which makes the upload slow enough to time out on a mobile connection) ── */
+function resizeImageFile(file, maxDim, quality) {
+  return new Promise(function(resolve) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var img = new Image();
+      img.onload = function() {
+        var w = img.width, h = img.height;
+        var scale = Math.min(1, maxDim / Math.max(w, h));
+        var canvas = document.createElement('canvas');
+        canvas.width = Math.round(w * scale);
+        canvas.height = Math.round(h * scale);
+        var ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL('image/jpeg', quality || 0.85));
+      };
+      img.onerror = function() { resolve(e.target.result); };
+      img.src = e.target.result;
+    };
+    reader.onerror = function() { resolve(null); };
+    reader.readAsDataURL(file);
+  });
+}
+
 /* ── CSS ── */
 const ADMIN_CSS = [
   '.admin-page{min-height:100vh;background:#1c1008;display:flex;font-family:"Inter",system-ui,-apple-system,sans-serif}',
@@ -876,12 +901,11 @@ function renderProductImages(container) {
 function handleImageFiles(container, files) {
   Array.from(files).forEach(function(file) {
     if (!file.type.startsWith('image/')) return;
-    var reader = new FileReader();
-    reader.onload = function(e) {
-      productImages.push(e.target.result);
+    resizeImageFile(file, 1600, 0.85).then(function(dataUrl) {
+      if (!dataUrl) return;
+      productImages.push(dataUrl);
       renderProductImages(container);
-    };
-    reader.readAsDataURL(file);
+    });
   });
 }
 
@@ -1031,12 +1055,11 @@ function openCategoryModal(container, category) {
   var imgInput = container.querySelector('#cm-img-input');
   imgInput.onchange = function() {
     if (!imgInput.files[0]) return;
-    var reader = new FileReader();
-    reader.onload = function(e) {
-      catImageUrl = e.target.result;
+    resizeImageFile(imgInput.files[0], 1200, 0.85).then(function(dataUrl) {
+      if (!dataUrl) return;
+      catImageUrl = dataUrl;
       preview.innerHTML = '<img src="' + catImageUrl + '" style="width:100%;max-height:120px;object-fit:cover;border-radius:10px;border:1px solid rgba(200,144,10,.2)" />';
-    };
-    reader.readAsDataURL(imgInput.files[0]);
+    });
   };
 
   var closeModal = function() { modal.classList.add('hidden'); editingCategory = null; };
@@ -1428,12 +1451,11 @@ async function loadStory(container) {
 
   sec.querySelector('#st-img-input').onchange = function(e) {
     Array.prototype.forEach.call(e.target.files, function(file) {
-      var reader = new FileReader();
-      reader.onload = function(ev) {
-        storyImages.push(ev.target.result);
+      resizeImageFile(file, 1600, 0.85).then(function(dataUrl) {
+        if (!dataUrl) return;
+        storyImages.push(dataUrl);
         renderStoryImages();
-      };
-      reader.readAsDataURL(file);
+      });
     });
   };
 
