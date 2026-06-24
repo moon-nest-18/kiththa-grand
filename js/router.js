@@ -110,6 +110,10 @@ export const router = {
     window.scrollTo({ top: 0, behavior: 'instant' });
     target.classList.add('active');
 
+    /* Pages with no dark hero banner need the navbar to stay solid (not transparent) */
+    var HERO_PAGES = ['home', 'products', 'about', 'contact', 'bulk-orders', 'cart', 'wishlist'];
+    document.body.classList.toggle('no-hero-page', HERO_PAGES.indexOf(page) === -1);
+
     /* Load and run page module */
     try {
       var mod = await pages[page]();

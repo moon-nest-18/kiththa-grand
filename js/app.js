@@ -123,9 +123,12 @@ const navbar     = document.getElementById('navbar');
 const hamburger  = document.getElementById('hamburger');
 const mobileMenu = document.getElementById('mobile-menu');
 
-window.addEventListener('scroll', function() {
-  if (navbar) navbar.classList.toggle('scrolled', window.scrollY > 60);
-}, { passive: true });
+function updateNavbarScrolled() {
+  if (!navbar) return;
+  navbar.classList.toggle('scrolled', window.scrollY > 60 || document.body.classList.contains('no-hero-page'));
+}
+window.addEventListener('scroll', updateNavbarScrolled, { passive: true });
+document.addEventListener('pageChange', updateNavbarScrolled);
 
 var mobileOverlay = document.getElementById('mobile-overlay');
 
