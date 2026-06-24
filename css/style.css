@@ -1008,7 +1008,7 @@ body.menu-open { overflow: hidden; }
 }
 .product-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-lg); }
 .product-img {
-  width: 100%; aspect-ratio: 4/3;
+  width: 100%; aspect-ratio: 1/1;
   background: var(--cream-dark);
   display: flex; align-items: center; justify-content: center;
   font-size: 4rem;
@@ -1364,7 +1364,6 @@ body.menu-open { overflow: hidden; }
   .products-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
   .product-card .product-name { font-size: .82rem; }
   .product-card .product-price { font-size: .9rem; }
-  .product-card .product-img { height: 140px; }
   /* Section */
   .section { padding: 48px 0; }
   .section-title { font-size: clamp(1.25rem, 7vw, 1.6rem); }

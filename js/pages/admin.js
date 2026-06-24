@@ -807,13 +807,13 @@ function openProductModal(container, product, categories) {
 
     btn.disabled = true; btn.textContent = 'Saving...';
 
-    /* Upload new images — runs through AI background removal + enhance */
+    /* Upload new images to Cloudinary */
     var uploadedUrls = [];
     for (var i = 0; i < productImages.length; i++) {
       var img = productImages[i];
       if (img.startsWith('data:') || img.startsWith('blob:')) {
-        btn.textContent = 'AI processing image ' + (i + 1) + '/' + productImages.length + '...';
-        var url = await uploadImageAI(img, 'products');
+        btn.textContent = 'Uploading image ' + (i + 1) + '/' + productImages.length + '...';
+        var url = await uploadImage(img, 'products');
         if (url) uploadedUrls.push(url);
       } else {
         uploadedUrls.push(img);
@@ -917,37 +917,21 @@ function renderVariants(container) {
   });
 }
 
-/* ── AI IMAGE PROCESSING (background removal + enhance) for product photos ── */
-async function uploadImageAI(dataUrl, bucket) {
+/* ── IMAGE UPLOAD to Cloudinary ── */
+async function uploadImage(dataUrl, folder) {
   try {
-    var res = await supabase.functions.invoke('process-product-image', {
-      body: { image: dataUrl, bucket: bucket },
+    var res = await supabase.functions.invoke('upload-image', {
+      body: { image: dataUrl, folder: folder },
     });
     if (res.error || !res.data || !res.data.url) {
-      var msg = (res.data && res.data.error) || (res.error && res.error.message) || 'AI processing failed';
-      showToast(msg + ' — uploading original instead', 'error');
-      return uploadImage(dataUrl, bucket);
+      var msg = (res.data && res.data.error) || (res.error && res.error.message) || 'Image upload failed';
+      showToast(msg, 'error');
+      return null;
     }
     return res.data.url;
   } catch (e) {
-    showToast('AI processing failed — uploading original instead', 'error');
-    return uploadImage(dataUrl, bucket);
-  }
-}
-
-/* ── IMAGE UPLOAD to Supabase Storage ── */
-async function uploadImage(dataUrl, bucket) {
-  try {
-    var res = await fetch(dataUrl);
-    var blob = await res.blob();
-    var ext  = blob.type.split('/')[1] || 'jpg';
-    var path = Date.now() + '-' + Math.random().toString(36).slice(2) + '.' + ext;
-    var up   = await supabase.storage.from(bucket).upload(path, blob, { contentType: blob.type });
-    if (up.error) { showToast('Image upload failed: ' + up.error.message, 'error'); return null; }
-    var pub  = supabase.storage.from(bucket).getPublicUrl(path);
-    return pub.data.publicUrl;
-  } catch(e) {
-    showToast('Image upload error', 'error'); return null;
+    showToast('Image upload error', 'error');
+    return null;
   }
 }
 
