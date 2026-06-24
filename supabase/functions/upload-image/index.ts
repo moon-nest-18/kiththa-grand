@@ -37,16 +37,16 @@ Deno.serve(async (req) => {
     });
     const { data: userData, error: userErr } = await userClient.auth.getUser();
     if (userErr || !userData?.user) {
-      return new Response(JSON.stringify({ error: "Not authenticated" }), { status: 401, headers: CORS_HEADERS });
+      return new Response(JSON.stringify({ error: "Not authenticated" }), { status: 200, headers: CORS_HEADERS });
     }
     const { data: profile } = await userClient.from("users").select("role").eq("id", userData.user.id).single();
     if (!profile || profile.role !== "admin") {
-      return new Response(JSON.stringify({ error: "Admin access required" }), { status: 403, headers: CORS_HEADERS });
+      return new Response(JSON.stringify({ error: "Admin access required" }), { status: 200, headers: CORS_HEADERS });
     }
 
     const { image, folder } = await req.json();
     if (!image) {
-      return new Response(JSON.stringify({ error: "Missing image" }), { status: 400, headers: CORS_HEADERS });
+      return new Response(JSON.stringify({ error: "Missing image" }), { status: 200, headers: CORS_HEADERS });
     }
     const targetFolder = "kiththa-grand/" + (folder || "products");
 
@@ -71,7 +71,7 @@ Deno.serve(async (req) => {
     if (!cloudRes.ok || !cloudJson.secure_url) {
       console.error("Cloudinary error:", cloudJson);
       const msg = (cloudJson.error && cloudJson.error.message) || "Cloudinary upload failed";
-      return new Response(JSON.stringify({ error: msg }), { status: 502, headers: CORS_HEADERS });
+      return new Response(JSON.stringify({ error: msg }), { status: 200, headers: CORS_HEADERS });
     }
 
     return new Response(JSON.stringify({ url: cloudJson.secure_url }), {
@@ -79,6 +79,6 @@ Deno.serve(async (req) => {
     });
   } catch (e) {
     console.error(e);
-    return new Response(JSON.stringify({ error: String(e) }), { status: 500, headers: CORS_HEADERS });
+    return new Response(JSON.stringify({ error: String(e) }), { status: 200, headers: CORS_HEADERS });
   }
 });
